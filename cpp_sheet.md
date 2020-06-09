@@ -181,23 +181,23 @@ enum weekend {SAT=14,SUN=3};// Explicit representation as int
 enum weekend day = SAT;     // day is a variable of type weekend (e.g may be 14 but not 10)
 
 typedef String char*;       // String s; means char* s;
-```
 
-```cpp
 const int c=3;              // Constants must be initialized, cannot assign to (read-only)
 constexpr int = d;          // Same as above but d must be known at compile time (e.g. d may not be a parameter)
-
-//Always read right to left
-const int* p=a;             // p is a pointer to a constant int (might point elsewhere)
-int* const p=a;             // p is a constant pointer to an int (a will change if as *p)
-const int* const p=a;       // Both p and its contents are constant
-const int& cr=x;            // cr is a reference (alias) of int that is constant
 
 int8_t,uint8_t,int16_t,
 uint16_t,int32_t,uint32_t,
 int64_t,uint64_t            // Fixed length standard types
 
 auto it = m.begin();        // Auto deduces type of variable (in this case an iterator)
+```
+Always read right to left:
+
+```cpp
+const int* p=a;             // p is a pointer to a constant int (might point elsewhere)
+int* const p=a;             // p is a constant pointer to an int (a will change if as *p)
+const int* const p=a;       // Both p and its contents are constant
+const int& cr=x;            // cr is a reference (alias) of int that is constant
 ```
 
 
@@ -267,7 +267,7 @@ catch (...) { c; }          // if a throws something else, jump here
 ```cpp
 int f(int x, int y);        // f is a function taking 2 ints BY COPY and returning int BY COPY
 Player& f(Player &x);       // f is a function taking 1 Player BY REFERENCE and returning it BY REFERENCE
-                            // careful to know that the return object does not get popped out of stack/scope!
+                            // make sure that the return object does not get popped out of stack/scope!
 
 int f(int x);               // f is a overload of f (must change arguments, return type alone is not sufficient)
 void f();                   // f is a procedure taking no arguments
@@ -316,11 +316,13 @@ a[i]                        // i'th element of array a
 f(x,y)                      // Call to function f with arguments x and y
 T(x,y)                      // Object of class T initialized with x and y
 typeid(x)                   // Returns referebce to object of type of x (access name with .name())
-```
 
-```cpp
-dynamic_cast<T>(x)          // Converts x to a T, checked at run time (may convert classes if members match, else nullptr)
-static_cast<T>(x)           // Converts x to a T, nullptr if sizes differ, no error between faulty classes
+dynamic_cast<T>(x)          // Converts x to a T, checked at run time
+                            // May convert child class to parent, with slicing data problems
+                            // Doing the reverse is not possible and will result in nullptr or exception
+static_cast<T>(x)           // Converts x to a T, for simple data types
+                            // Alerts when possible truncation issues (which C-style casts do not do)
+                            // Does not work with classe types
 reinterpret_cast<T>(x)      // Interpret bits of x as a T
 const_cast<T>(x)            // Casts away const
 
@@ -335,17 +337,15 @@ x--                         // Subtract 1 from x, evaluates to original x (postf
 &x                          // Address of x
 *p                          // Contents of address p (*&x equals x)
 (T) x                       // Convert x to T (obsolete, use .._cast<T>(x))
-```
 
-```cpp
 x * y                       // Multiply
 x / y                       // Divide (return same type of operands - 3/2 is 1)
 x % y                       // Modulo (result has sign of x)
 
 x + y                       // Add, or \&x[y]
 x - y                       // Subtract, or number of elements from *x to *y
-x << y                      // x shifted y bits to left (x * pow(2, y)) OR OUTPUT OPERATOR
-x >> y                      // x shifted y bits to right (x / pow(2, y)) OR EXTRACTION OPERATOR
+x << y                      // x shifted y bits to left (x * pow(2, y))
+x >> y                      // x shifted y bits to right (x / pow(2, y))
 
 x < y                       // Less than
 x <= y                      // Less than or equal to
@@ -367,8 +367,10 @@ throw x                     // Throw exception, aborts if not caught
 
 ## Unions
 
+Memory location of all members is the same; only one may be used at given time.
+
 ```cpp
-union Numbers //memory location of all members is the same; only one may be used at given time
+union Numbers
 {
     int x;
     double d;
@@ -378,7 +380,11 @@ union Numbers //memory location of all members is the same; only one may be used
 
 ## Classes
 
+Define the class in a header file:
+
 ```cpp
+#pragma once                // Header files use this directive to avoid conflicting symbols
+
 class T {                   // A new type
 private:                    // Section accessible only to T's member functions
 protected:                  // Also accessible to classes derived from T
@@ -399,21 +405,23 @@ public:                     // Accessible to all
     T(float x): T((int)x) {}// Delegate constructor to T(int)
 
     int operator int() const
-    {return x;}             // Allows int(t); const meaning no class attributes will be changed
+    {return x;}             // Allows int(t)
     int operator()(int a) const
     {return x+a;}           // One can now do T obj; int sumObj = obj(a); -> Functors (function objects)
                             // Functors are useful to pass to STL algorithms since they hold state (class attributes)
 
-    friend void i();        // Global function i() has private access
+    friend void i();        // Global function i() has private access (friendship is given by class, not clamed by function)
     friend class U;         // Members of class U have private access
     static int y;           // Data shared by all T objects
     static void l();        // Shared code.  May access y but not x
-    class Z {};             // Nested class T::Z
-    typedef int V;          // T::V means int
 };
 ```
 
+Then define member functions and use the class in implementation files:
+
 ```cpp
+#include "T.h"              // Use this directive to access the class definitions
+
 void T::f() {               // Code for member function f of class T
     this->x = x;}           // this is address of self (means x=x;)
 int T::y = 2;               // Initialization of static member (required)
@@ -421,6 +429,22 @@ T::l();                     // Call to static member
 T t;                        // Create object t implicit call constructor, same as T t = T();
 t.f();                      // Call method f on object t
 ```
+
+
+## Class inheritance and polymorfism
+
+Mind the acccess between base and child class members:
+
+```
+INHERITANCE                      BASE CLASS
+                      public     protected     private
+
+public                public     protected     -
+protected             protected  protected     -
+private               private    private       - 
+```
+
+Create a child class according to your needs:
 
 ```cpp
 struct T {                  // Equivalent to: class T { public:
@@ -434,81 +458,47 @@ class U: public T {         // Derived class U inherits all members of base T
   U(): T();                 // Base class constructors are not inherited; use delegation like this
   void g(int x) override;   // Explicitly override method g (if derived g doesn't match any base g, compiler error)
   void g(int x);            // Same as above but compiler cannot check if g matches
+  int y;                    // Specific characteristic of U, will get sliced away if U is interpreted as a T
 };  
-
-class V: private T {};      // Inherited members of T become private
 ```
 
-
-## Class implementation across files
-
-In the header file:
-```cpp
-#pragma once //avoid multiple conflicting symbols
-
-class myClass{
-  public:
-     myClass(int a);
-     doSomething();
-  private:
-  int x;
-};
-```
-
-In the source file:
-
-```cpp
-#include "myClass.h"
-
-myClass::myClass(int a): x(a){
-  // other constructor tasks
-};
-
-myClass:doSomething(){
-  // some code
-}
-```
-
-
-## Class inheritance and polymorfism
-
-```
-INHERITANCE                      BASE CLASS
-                      public     protected     private
-
-public                public     protected     -
-protected             protected  protected     -
-private               private    private       - 
-```
-
+Mind a possible data slicing problem:
 
 ```cpp
 class FeupPerson {};
 class Student : public FeupPerson {};
 FeupPerson p;
 Student s;
+
 p = s; // possible but data is sliced away - slicing problem (s=p is illegal)
+
 std::vector<FeupPerson> p(3); // polymorfic since FeupPerson might be a Student as well
+
 p[1] = Student(); // possible but data is sliced away yet again
                   // use virtual methods to fix this issue
 ```
 
 
-## Templates
+## Templates - overload for all types
 
 ```cpp
-template <class T> T f(T t);// Overload f for all types
-template <class T> class X {// Class with type parameter T
+template <class T> T
+f(T t);
+
+template <class T>
+class X {
   X(T t); };                // A constructor
-template <class T> X<T>::X(T t) {}
-                            // Definition of constructor
+  
+template <class T>
+X<T>::X(T t) {}
+
 X<int> x(3);                // An object of type "X of int"
-template <class T, class U=T, int n=0>
-                            // Template with default parameters
+
+template <class T, class U=T, int n=0>     // Template with default parameters
 ```
 
 
-## Namespaces
+## Namespaces - avoid naming conflicts
 
 ```cpp
 namespace N {class T {};}   // Hide name T
@@ -542,7 +532,7 @@ delete[] intMatrix;
 ```
 
 
-## `math.h`, `cmath` (floating point math)
+## `math.h`, `cmath` - floating point math
 
 ```cpp
 #include <cmath>            // Include cmath (std namespace)
@@ -557,7 +547,7 @@ fabs(x); fmod(x, y);        // Absolute value, x mod y
 ```
 
 
-## `assert.h`, `cassert` (Debugging Aid)
+## `assert.h`, `cassert` - debugging Aid)
 
 ```cpp
 #include <cassert>        // Include iostream (std namespace)
@@ -566,7 +556,7 @@ assert(e);                // if e is false, print message and abort
 ```
 
 
-## `iostream.h`, `iostream` (Replaces `stdio.h`; inherits from ios)
+## `iostream.h`, `iostream` (replaces `stdio.h`; inherits from ios)
 
 ```cpp
 #include <iostream>         // Include iostream (std namespace)
@@ -591,7 +581,7 @@ ostream& operator<<(ostream& o, const T& x) {return o << ...;} //return referenc
 ```
 
 
-## `fstream.h`, `fstream` (File I/O works like `cin`, `cout`)
+## `fstream.h`, `fstream` (file I/O works like `cin`, `cout`)
 
 ```cpp
 #include <fstream>          // Include filestream (std namespace)
@@ -606,6 +596,20 @@ ofstream f2("filename");    // Open file for writing
 if (f2) f2 << x;            // Write to file
 ```
 
+For random access files be aware of stream pointers:
+
+```cpp
+
+fstream handle("filename",ios::binary); // open in binary mode to access char by char (byte by byte)
+
+handle.tellg(); // returns pointer to current location
+handle.seekg(place); // tries to put current reading position at place
+
+handle.tellp(); // returns pointer to current location
+handle.seekp(place); // tries to put current writing position at place
+
+if (handle.fail()) handle.clear(); // if place is out of file bounds, clear error flag
+```
 
 ## `stringstream` (most methods are inherited from ios; allows input and output)
 
@@ -628,35 +632,16 @@ ss << "Now I say hi"      // Reusable again
 ```
 
 
-## Stream Pointers (useful for random access files - binary mode)
-
-```cpp
-// Reading
-
-handle.tellg(); // returns pointer to current location
-handle.seekg(place); // tries to put current reading position at place
-```
-
-```cpp
-// Writing
-
-handle.tellp(); // returns pointer to current location
-handle.seekp(place); // tries to put current writing position at place
-
-if (handle.fail()) doSomething(); //position not found (outside bounds)
-```
-
-
-## `string` (Variable sized character array)
+## `string` - variable sized character array
 
 ```cpp
 #include <string>         // Include string (std namespace)
 string s1, s2="hello";    // Create strings
 string repeated('c',4):   // Same as string("cccc");
-s1.size(); s2.size();     // Number of characters: 0, 5
-s1 += s2 + " world";       // Concatenation
+s1.size();                // Number of characters ('\n' is not counted)
+s1 += " world";           // Concatenation
 s1 == "hello world"       // Comparison, also <, >, !=, etc.
-s1[0];                    // 'h'
+s1[0];                    // 'h'; use s1.at(0) to be able to handle out of bounds exceptions
 s1.substr(m, n);          // Substring of size n starting at s1[m]
 s1.substr(m);             // Substring from s1[m] until end of s1
 s1.c_str();               // Convert to const char*, restricted lifetime
@@ -666,7 +651,7 @@ s1.find("hello");         // Return pointer to first char of found substring, if
 ```
 
 
-## `vector` (Dynamic array: rapid insertions/deletions on back; direct access)
+## `vector` - dynamic array (rapid insertions/deletions on back; direct access)
 ```cpp
 #include <vector>         // Include vector (std namespace)
 vector<int> a(10);        // a[0]..a[9] are int (default size is 0)
@@ -679,32 +664,27 @@ a.pop_back();             // Decrease size by 1
 a.front();                // a[0];
 a[20]=1;                  // Segmenation fault
 a.at(20)=1;               // Like a[20] but throws out_of_range()
-```
 
-```cpp
 a.erase(a.begin()+3);     // Remove a[3], shifts elements towards back
 
-a.erase(std::remove_if(a.begin(), a.end(), IsOdd), a.end());
+a.erase(std::remove_if(a.begin(), a.end(), isOdd), a.end());
                           // Erase-remove idiom (faster than erasing one-by-one in a for loop)
                           // Remove_if points to the element after all non-removed elements
+                          // isOdd is the comp function, should return bool and receive two objects
 
 a.insert(a.begin()+2,12)  // Make a[2] 12; shifts remaining to the right (linear complexity)
 
-for (int& p : a)
-  p=0;                    // C++11: Set all elements of a to 0
-
-for (vector<int>::iterator p=a.begin(); p!=a.end(); ++p)
-  *p=0;                   // C++03: Set all elements of a to 0
+for (int& p : a)  p=0;  // C++11 provides an alternative for iterators
+for (vector<int>::iterator p=a.begin(); p!=a.end(); ++p)  *p=0;  // C++03 had no range-based for loop
 
 vector<int> b(a.begin(), a.end());  // same as b = a;
 vector<T> c(n, x);        // c[0]..c[n-1] init to x
-T d[10]; vector<T> e(d, d+10);      // e is initialized from d
 ```
 
 
-## `deque` (Stack queue: rapid insertions/deletions on front and back; direct acess)
+## `deque` - stack queue (rapid insertions/deletions on front and back; direct acess)
 
-`deque<T>` is like `vector<T>`, but also supports (at the cost of being slower):
+`deque<T>` is like `vector<T>`, but also supports:
 
 ```cpp
 #include <deque>          // Include deque (std namespace)
@@ -714,7 +694,7 @@ a.pop_front();            // Removes a[0], shifts toward front
 ```
 
 
-## `list` (Doubly linked list: rapid insertion/deletion everywhere, no direct access to elements)
+## `list` - doubly linked list (rapid insertion/deletion everywhere, no direct access to elements)
 
 `list<T>` is efficient at both forward/backward traversal, but cannot access specified index without accessing all on the left/right.
 Therefore you can't do l[3] and neither l.begin()+3; only it++ and it--.
@@ -729,7 +709,7 @@ l.sort();      // only for lists, use std::sort for vector or deque
 ```
 
 
-## `array` (Statically sized array: lightweight wrapper around C array)
+## `array` - statically sized array (lightweight wrapper around C array)
 
 As with C arrays, size must be known at compile time.
 
@@ -741,7 +721,7 @@ houses.size()                  // Return 3
 ```
 
 
-## `utility` (Pair)
+## `utility` (to use pair)
 
 ```cpp
 #include <utility>               // Include utility (std namespace)
@@ -751,7 +731,7 @@ a.second;                        // 3
 ```
 
 
-## `map` (Associative container)
+## `map` (ordered associative container)
 
 If order is not important, use `unordered_map` instead.
 
@@ -761,7 +741,7 @@ map<string, int> a;       // Map from string to int
 a["hello"] = 3;           // Add or replace element a["hello"]
 a.erase("hello");         // Erase by key
 a.clear();                // Erase all map elements, leaving size at 0
-for (auto& p:a) cout << p.first << p.second;  // Prints hello, 3
+for (auto& p:a) cout << p.first << ": " << p.second;  // Prints "hello: 3"
 a.size();                 // 1
 a.empty()                 // Same as !a.size()
 ```
@@ -776,7 +756,10 @@ Elements are considered duplicates (therefore not added) when !(a < b) && !(b < 
 #include <set>            // Include set (std namespace)
 set<int> s;               // Set of integers
 s.insert(123);            // Add element to set
-if (s.find(123) != s.end()) s.erase(123); // erase 123
+
+if (s.find(123) != s.end()) // find is set specific (use std::find for other containers)
+s.erase(123);  // no need to use iterators here (for vectors you did)
+
 cout << s.size();         // Number of elements in set
 ```
 
@@ -796,7 +779,7 @@ reverse(a.begin(), a.end());           // Reverse vector or deque
 find(a.begin(),a.end(),value);         // Return pointer to first value if found, else a.end()
 binary_search(a.begin(),a.end(),value);// Same as above but only on sorted containers with random access
 count(a.begin(),a.end(),value);        // Return number of occurrences of value in container a
-search(a.begin(),a.end(),value.begin(),value.end() // Return iterator to first ocurrence of sequence value
+search(a.begin(),a.end(),sequence.begin(),sequence.end(); // Return iterator to first ocurrence of sequence
 remove(a.begin(),a.end(),value);       // Places non-removed elements on top of removed ones
                                        // Capacity is not changed; returns pointer to after the last non-removed element
 ```
@@ -805,10 +788,13 @@ remove(a.begin(),a.end(),value);       // Places non-removed elements on top of 
 ## `chrono` (Time related library)
 
 ```cpp
-#include <chrono>         // Include chrono
-using namespace std::chrono
+#include <chrono>
+using namespace std::chrono;
+
 auto from = high_resolution_clock::now();
+
 // ... do some work    
+
 auto to = high_resolution_clock::now();
 using ms = duration<float, milliseconds::period>;
 cout << duration_cast<ms>(to - from).count() << "ms";
