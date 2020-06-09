@@ -288,7 +288,7 @@ extern "C" {void f();}   // f() was compiled in C
 
 ## Lambda functions
 
-[] is the list of acessible variables from the outer scope. Pass & to allow acess to all.
+[] is the list of acessible variables from the outer scope. Pass & to allow access to all.
 
 ```cpp
 int plusTwo= [](int a){
