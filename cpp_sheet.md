@@ -1,0 +1,829 @@
+```
+This C++ sheet cheat is adapted from https://github.com/mortennobel/cpp-cheatsheet.
+All statements assume using namespace std.
+As of C++20 standard.
+PROG 19/20, FEUP
+Scenic Time
+```
+
+
+## Special Keywords
+
+Reserved keywords (may not be used in other contexts):
+
+```cpp
+alignas
+alignof
+and
+and_eq
+asm
+atomic_cancel
+atomic_commit
+atomic_noexcept
+auto
+bitand
+bitor
+bool
+break
+case
+catch
+char
+char8_t
+char16_t
+char32_t
+class
+compl
+concept
+const
+consteval
+constexpr
+constinit
+const_cast
+continue
+co_await
+co_return
+co_yield
+decltype
+default
+delete
+do
+double
+dynamic_cast
+else
+enum
+explicit
+export
+extern
+false
+float
+for
+friend
+goto
+if
+inline
+int
+long
+mutable
+namespace
+new
+noexcept
+not
+not_eq
+nullptr
+operator
+or
+or_eq
+private
+protected
+public
+reflexpr
+register
+reinterpret_cast
+requires
+return
+short
+signed
+sizeof
+static
+static_assert
+static_cast
+struct
+switch
+synchronized
+template
+this
+thread_local
+throw
+true
+try
+typedef
+typeid
+typename
+union
+unsigned
+using
+virtual
+void
+volatile
+wchar_t
+while
+xor
+xor_eq
+```
+
+May be used in function names or objects when not in their special context:
+
+```
+override
+final
+import
+module
+transaction_safe
+transaction_safe_dynamic
+```
+
+
+## Preprocessor
+
+```cpp
+#include  <stdio.h>         // Insert standard header file
+#include "myfile.h"         // Insert file in current directory
+#define X some text         // Replace X with some text
+#define F(a,b) a+b          // Replace F(1,2) with 1+2
+#undef X                    // Remove definition
+
+#if defined(X)              // Conditional compilation (#ifdef X)
+#else                       // Optional (#ifndef X or #if !defined(X))
+#endif                      // Required after #if, #ifdef
+```
+
+
+## Literals
+
+```cpp
+255, 0377, 0xff             // Integers (decimal, octal, hex)
+2147483647L, 0x7fffffffl    // Long (32-bit) integers
+123.0, 1.23e2               // double (real) numbers
+'a', '\141', '\x61'         // Character (literal, octal, hex)
+'\n', '\\', '\'', '\"', '\0'// Newline, backslash, single quote, double quote, null terminator
+"string"                    // Same as {'h','e','l','l','o','\0'};
+true, false                 // bool constants 1 and 0
+nullptr                     // Pointer type with the address of 0
+```
+
+
+## Declarations
+
+```cpp
+int x;                      // Declare x to be an integer (value undefined)
+int x=255;                  // Declare and initialize x to 255
+short s;                    // Usually 16 or 32 bit integer (int may be either)
+char c='a';                 // Usually 8 bit character
+unsigned char u=255;        // Signed is implicit, use unsigned to expand positive range
+float f; double d;          // Single or double precision real (always signed)
+bool b=true;                // true or false, may also use int (1 or 0)
+int a, b, c;                // Multiple declarations
+
+int a[10];                  // Array of 10 ints (a[0] through a[9])
+int a[]={0,1,2};            // Initialized array (or a[3]={0,1,2}; )
+int a[][2]={{1,2},{4,5}};   // Array of array of ints (only first dimension can be deduced!)
+char s[]="hello";           // String (6 elements including '\0'); same as char* s = "hello"
+std::string s = "Hello";    // same as std::string s("Hello"); calls default constructor
+
+int *p,*a;                  // p and a are pointers to ints (* before a is necessary!)
+char* s="hello";            // s points to first element of array
+void* p=nullptr;            // Address of untyped memory (nullptr is 0)
+int& r=x;                   // r is a reference to (alias of) int x
+int* r=x;                   // r is memory location of x (dereference later to get object: int myInt = *r;)
+
+enum weekend {SAT,SUN,MON}; // weekend is a type wrapping global integer values: SAT=0, SUN=1, MON=2
+enum weekend {SAT=14,SUN=3};// Explicit representation as int
+enum weekend day = SAT;     // day is a variable of type weekend (e.g may be 14 but not 10)
+
+typedef String char*;       // String s; means char* s;
+```
+
+```cpp
+const int c=3;              // Constants must be initialized, cannot assign to (read-only)
+constexpr int = d;          // Same as above but d must be known at compile time (e.g. d may not be a parameter)
+
+//Always read right to left
+const int* p=a;             // p is a pointer to a constant int (might point elsewhere)
+int* const p=a;             // p is a constant pointer to an int (a will change if as *p)
+const int* const p=a;       // Both p and its contents are constant
+const int& cr=x;            // cr is a reference (alias) of int that is constant
+
+int8_t,uint8_t,int16_t,
+uint16_t,int32_t,uint32_t,
+int64_t,uint64_t            // Fixed length standard types
+
+auto it = m.begin();        // Auto deduces type of variable (in this case an iterator)
+```
+
+
+## Storage Classes
+
+```cpp
+int x;                      // Declare x in the stack. It's automatically popped at end of scope
+static int x;               // Global lifetime even if local scope; cannot be used in other translation units
+extern int x;               // So that the compiler is able to access x declared in other translation units
+```
+
+
+## Statements
+
+```cpp
+int x;x=y;                  // Declarations and assignements are statements
+;                           // Empty statement
+
+{                           
+    int x;                  // x is not accessible outside its scope
+}
+
+if (x) a;                   // if x is true (not 0), evaluate a
+else if (y) b;              // if not x and y (optional, may be repeated)
+else c;                     // if not x and not y (optional)
+
+while (cond) a;             // Repeat while cond is true (if cond is int -> cond!=0)
+
+for (initial; cond; inc) a; // Equivalent to: x; while(y) {a; z;}
+
+for (t elem : container) a; // Range-based for loop - do a; for each COPY of element in container
+
+do a; while (x);            // Equivalent to: a; while(x) a;
+
+switch (x) {                // x must be integer known at compile time
+    case X1: a;             // if x == X1, do a; b; c; (everyting is executed until break or out of scope)
+    case X2: b;             // if x == X2, do b; c; (use break if c; is not desired)
+    default: c;             // Same as if (true)
+}
+
+break;                      // Jump out of while, do, or for loop, or switch
+continue;                   // Jump to bottom of while, do, or for loop
+return x;                   // Return x from function to caller
+```
+
+
+## Exception handling
+
+```cpp
+#include <stdexcept> // to access STL exception classes
+
+try {
+  doSomething(); // this may throw an exception
+  throw invalid_argument("received negative value"); // you may throw an object yourself (in this case an exception)
+}
+catch (exception t) { // if doSomething() throws a object of type exception (could be any other), jump here
+  fixSomething();
+  cout << t.what() << endl; // print error message describing exception
+  throw; // throw t again
+}
+catch (...) { c; }          // if a throws something else, jump here
+```
+
+
+## Functions
+
+```cpp
+int f(int x, int y);        // f is a function taking 2 ints BY COPY and returning int BY COPY
+Player& f(Player &x);       // f is a function taking 1 Player BY REFERENCE and returning it BY REFERENCE
+                            // careful to know that the return object does not get popped out of stack/scope!
+
+int f(int x);               // f is a overload of f (must change arguments, return type alone is not sufficient)
+void f();                   // f is a procedure taking no arguments
+void f(int a=0);            // Default parameters always come after non-default ones
+f();                        // Default return type is int (bad practice to hide this info)
+inline f() {statement;}     // Optimize for speed when defined in this translation unit
+f() { statements; }         // Function definition (must be global)
+T operator-(T x);           // allows T t, a; t-a;
+T operator++(int);          // postfix ++ or -- (parameter ignored)
+extern "C" {void f();}      // f() was compiled in C
+```
+
+
+## Lambda functions
+
+```cpp
+int plusTwo= [](int a){ // [] is the list of outside acessible variables. & to allow acess to all outter scope.
+return a+2;
+};
+
+int a = 3;
+int aPlusTwo = plusTwo(a); // Returns 5
+```
+
+
+## Main function
+
+```cpp
+int main()  { statements... }     // main is the starting point of any program
+int main(int argc, char* argv[]) { statements... }
+        //argc -> number of arguments when running the program (default 1 - program name)
+        //argv -> command strings (char**)
+```
+
+
+## Expressions
+
+```cpp
+T::X                        // Name X defined in class T
+N::X                        // Name X defined in namespace N
+::X                         // Global name X
+
+t.x                         // Member x of struct or class t
+p-> x                       // Member x of struct or class pointed to by p
+a[i]                        // i'th element of array a
+f(x,y)                      // Call to function f with arguments x and y
+T(x,y)                      // Object of class T initialized with x and y
+typeid(x)                   // Returns referebce to object of type of x (access name with .name())
+```
+
+```cpp
+dynamic_cast<T>(x)          // Converts x to a T, checked at run time (may convert classes if members match, else nullptr)
+static_cast<T>(x)           // Converts x to a T, nullptr if sizes differ, no error between faulty classes
+reinterpret_cast<T>(x)      // Interpret bits of x as a T
+const_cast<T>(x)            // Casts away const
+
+sizeof(x)                   // Number of bytes used to represent object x
+sizeof(T)                   // Number of bytes to represent type T
+x++                         // Add 1 to x, evaluates to original x (postfix)
+x--                         // Subtract 1 from x, evaluates to original x (postfix)
+++x                         // Add 1 to x, evaluates to new value (prefix)
+--x                         // Subtract 1 from x, evaluates to new value (prefix)
+~x                          // Bitwise complement of x
+!x                          // true if x is 0, else false (1 or 0 in C)
+&x                          // Address of x
+*p                          // Contents of address p (*&x equals x)
+(T) x                       // Convert x to T (obsolete, use .._cast<T>(x))
+```
+
+```cpp
+x * y                       // Multiply
+x / y                       // Divide (return same type of operands - 3/2 is 1)
+x % y                       // Modulo (result has sign of x)
+
+x + y                       // Add, or \&x[y]
+x - y                       // Subtract, or number of elements from *x to *y
+x << y                      // x shifted y bits to left (x * pow(2, y)) OR OUTPUT OPERATOR
+x >> y                      // x shifted y bits to right (x / pow(2, y)) OR EXTRACTION OPERATOR
+
+x < y                       // Less than
+x <= y                      // Less than or equal to
+x > y                       // Greater than
+x >= y                      // Greater than or equal to
+
+x & y                       // Bitwise and (3 & 6 is 2)
+x ^ y                       // Bitwise exclusive or (3 ^ 6 is 5)
+x | y                       // Bitwise or (3 | 6 is 7)
+x && y                      // x and then y (evaluates y only if x)
+x || y                      // x or else y (evaluates y only if !x)
+x = y                       // Assign y to x, returns new value of x
+x += y                      // x = x + y, also -= *= /= <<= >>= &= |= ^=
+
+x ? y : z                   // y if x, else z
+throw x                     // Throw exception, aborts if not caught
+```
+
+
+## Unions
+
+```cpp
+union Numbers //memory location of all members is the same; only one may be used at given time
+{
+    int x;
+    double d;
+};
+```
+
+
+## Classes
+
+```cpp
+class T {                   // A new type
+private:                    // Section accessible only to T's member functions
+protected:                  // Also accessible to classes derived from T
+public:                     // Accessible to all
+    int x;                  // Member data
+    void f();               // Member function
+    void g() {return;}      // Inline member function
+    void h() const;         // Does not modify any data members
+    int operator+(int y);   // t+y means t.operator+(y)
+    int operator-();        // -t means t.operator-()
+
+    T(): x(1) {}            // Constructor with initialization list (avoid allocating x twice!)
+    T(const T& t): x(t.x) {}// Copy constructor
+    T& operator=(const T& t)
+    {x=t.x; return *this; } // Assignment operator
+    ~T();                   // Destructor (automatic cleanup routine)
+    explicit T(int a);      // Allow T t=T(3) but not T t=3
+    T(float x): T((int)x) {}// Delegate constructor to T(int)
+
+    int operator int() const
+    {return x;}             // Allows int(t); const meaning no class attributes will be changed
+    int operator()(int a) const
+    {return x+a;}           // One can now do T obj; int sumObj = obj(a); -> Functors (function objects)
+                            // Functors are useful to pass to STL algorithms since they hold state (class attributes)
+
+    friend void i();        // Global function i() has private access
+    friend class U;         // Members of class U have private access
+    static int y;           // Data shared by all T objects
+    static void l();        // Shared code.  May access y but not x
+    class Z {};             // Nested class T::Z
+    typedef int V;          // T::V means int
+};
+```
+
+```cpp
+void T::f() {               // Code for member function f of class T
+    this->x = x;}           // this is address of self (means x=x;)
+int T::y = 2;               // Initialization of static member (required)
+T::l();                     // Call to static member
+T t;                        // Create object t implicit call constructor, same as T t = T();
+t.f();                      // Call method f on object t
+```
+
+```cpp
+struct T {                  // Equivalent to: class T { public:
+  T();                      // Class constructor 
+  virtual void i();         // May be overridden at run time by derived class
+  virtual void g(int x)=0;  // Must be overridden (pure virtual)
+};
+
+class U: public T {         // Derived class U inherits all members of base T
+  public:
+  U(): T();                 // Base class constructors are not inherited; use delegation like this
+  void g(int x) override;   // Explicitly override method g (if derived g doesn't match any base g, compiler error)
+  void g(int x);            // Same as above but compiler cannot check if g matches
+};  
+
+class V: private T {};      // Inherited members of T become private
+```
+
+
+## Class implementation across files
+
+In the header file:
+```cpp
+#pragma once //avoid multiple conflicting symbols
+
+class myClass{
+  public:
+     myClass(int a);
+     doSomething();
+  private:
+  int x;
+};
+```
+
+In the source file:
+
+```cpp
+#include "myClass.h"
+
+myClass::myClass(int a): x(a){
+  // other constructor tasks
+};
+
+myClass:doSomething(){
+  // some code
+}
+```
+
+
+## Class inheritance and polymorfism
+
+```
+INHERITANCE                      BASE CLASS
+                      public     protected     private
+
+public                public     protected     -
+protected             protected  protected     -
+private               private    private       - 
+```
+
+
+```cpp
+class FeupPerson {};
+class Student : public FeupPerson {};
+FeupPerson p;
+Student s;
+p = s; // possible but data is sliced away - slicing problem (s=p is illegal)
+std::vector<FeupPerson> p(3); // polymorfic since FeupPerson might be a Student as well
+p[1] = Student(); // possible but data is sliced away yet again
+                  // use virtual methods to fix this issue
+```
+
+
+## Templates
+
+```cpp
+template <class T> T f(T t);// Overload f for all types
+template <class T> class X {// Class with type parameter T
+  X(T t); };                // A constructor
+template <class T> X<T>::X(T t) {}
+                            // Definition of constructor
+X<int> x(3);                // An object of type "X of int"
+template <class T, class U=T, int n=0>
+                            // Template with default parameters
+```
+
+
+## Namespaces
+
+```cpp
+namespace N {class T {};}   // Hide name T
+N::T t;                     // Use name T in namespace N
+using namespace N;          // Make T visible without N::
+```
+
+
+## Dynamic memory allocation (manual allocations)
+
+C Style:
+
+```cpp
+// allocate 1D array
+int* intArray = (int*) malloc(nElems*sizeof(int));
+
+// deallocate 1D array
+free(intArray); //free takes a void*, but implicit conversion is made
+```
+
+C++ Style:
+
+```cpp
+// allocate 2D array
+int** intMatrix = new int*[nLines];
+for (int i=0; i < nLines;++i) intMatrix[i] = new int[nCols];
+
+// deallocate 2D array
+for (int i=0; i < nLines;++i) delete[] intMatrix[i];
+delete[] intMatrix;
+```
+
+
+## `math.h`, `cmath` (floating point math)
+
+```cpp
+#include <cmath>            // Include cmath (std namespace)
+sin(x); cos(x); tan(x);     // Trig functions, x (double) is in radians
+asin(x); acos(x); atan(x);  // Inverses
+atan2(y, x);                // atan(y/x)
+sinh(x); cosh(x); tanh(x);  // Hyperbolic sin, cos, tan functions
+exp(x); log(x); log10(x);   // e to the x, log base e, log base 10
+pow(x, y); sqrt(x);         // x to the y, square root
+ceil(x); floor(x);          // Round up or down (as a double)
+fabs(x); fmod(x, y);        // Absolute value, x mod y
+```
+
+
+## `assert.h`, `cassert` (Debugging Aid)
+
+```cpp
+#include <cassert>        // Include iostream (std namespace)
+assert(e);                // if e is false, print message and abort
+#define NDEBUG            // (before #include <assert.h>), turn off assert
+```
+
+
+## `iostream.h`, `iostream` (Replaces `stdio.h`; inherits from ios)
+
+```cpp
+#include <iostream>         // Include iostream (std namespace)
+cin >> x >> y;              // Read words x and y from stdin (set fail flags if types mismatch)
+                            // If x and y are strings, the extract operator always stops at whitespaces (consuming them)
+                            // final '\n' (enter) is not consumed, make sure to use cin.ignore() later
+
+cout << "x=" << 3 << endl;  // Write line to stdout (endl is equivalent to outputting '\n' and flushing)
+cerr << x << y << flush;    // Write to stderr and flush
+c = cin.get();              // c = getchar();
+cin.get(c);                 // Read char, store in c, consume it
+cin.peek(c);                // Read chae, store in c, do not consume it (still asks if buffer is empty)
+cin.getline(s, n, '\n');    // Read line into char s[n] to '\n' (default)
+
+if (cin)                    // Good state (not EOF and not fail)
+cin.clear();                // Set error flags to 0
+cin.ignore(nChars,Delim);   // Necessary after clearing flags; ignore nChars characters or until delimiter found
+
+                            // To read/write any type T:
+istream& operator>>(istream& i, T& x) {i >> ...; x=...; return i;} //pass by reference is mandatory
+ostream& operator<<(ostream& o, const T& x) {return o << ...;} //return reference to ostream after outputting to it
+```
+
+
+## `fstream.h`, `fstream` (File I/O works like `cin`, `cout`)
+
+```cpp
+#include <fstream>          // Include filestream (std namespace)
+
+ifstream f1("filename");    // Open text file for reading
+if (f1)                     // Test if open and input available
+    f1 >> x;                // Read object from file 
+f1.get(c);                  // Read char or line
+while (f1.getline(str, n)) outputStream << str;        // Read file line by line, output to stream
+
+ofstream f2("filename");    // Open file for writing
+if (f2) f2 << x;            // Write to file
+```
+
+
+## `stringstream` (most methods are inherited from ios; allows input and output)
+
+For specific input/output only purposes, use `istringstream` and `ostringstream` instead.
+
+```cpp
+#include <sstream>
+stringstream ss("Hello"); // same as stringstream m; m << "Hello";
+ss << " World";           // same syntax as cout, cin
+ss.str();                 // Return "Hello World"
+ss >> a >> b;             // a,b strings bacome "Hello" and "World" (no spaces because of >>)
+```
+
+Reaching the end of ss extraction causes eof. To reuse to output:
+
+```cpp
+ss.str("");               // Different from ss.str(); this clears current contents and sets them as ""
+ss.clear();               // Clear error flags
+ss << "Now I say hi"      // Reusable again
+```
+
+
+## Stream Pointers (useful for random access files - binary mode)
+
+```cpp
+// Reading
+
+handle.tellg(); // returns pointer to current location
+handle.seekg(place); // tries to put current reading position at place
+```
+
+```cpp
+// Writing
+
+handle.tellp(); // returns pointer to current location
+handle.seekp(place); // tries to put current writing position at place
+
+if (handle.fail()) doSomething(); //position not found (outside bounds)
+```
+
+
+## `string` (Variable sized character array)
+
+```cpp
+#include <string>         // Include string (std namespace)
+string s1, s2="hello";    // Create strings
+string repeated('c',4):   // Same as string("cccc");
+s1.size(); s2.size();     // Number of characters: 0, 5
+s1 += s2 + " world";       // Concatenation
+s1 == "hello world"       // Comparison, also <, >, !=, etc.
+s1[0];                    // 'h'
+s1.substr(m, n);          // Substring of size n starting at s1[m]
+s1.substr(m);             // Substring from s1[m] until end of s1
+s1.c_str();               // Convert to const char*, restricted lifetime
+s1 = to_string(12.05);    // Converts number to string
+getline(cin, s);          // Read line ending in '\n'
+s1.find("hello");         // Return pointer to first char of found substring, if not found string::npos
+```
+
+
+## `vector` (Dynamic array: rapid insertions/deletions on back; direct access)
+```cpp
+#include <vector>         // Include vector (std namespace)
+vector<int> a(10);        // a[0]..a[9] are int (default size is 0)
+vector<int> b{1,2,3};     // Create vector with values 1,2,3
+a.size();                 // Number of elements (10)
+a.push_back(3);           // Increase size to 11, a[10]=3
+e.emplace_back(3)         // Push back an object of type T constructed with parameter 3
+a.back()=4;               // a[10]=4;
+a.pop_back();             // Decrease size by 1
+a.front();                // a[0];
+a[20]=1;                  // Segmenation fault
+a.at(20)=1;               // Like a[20] but throws out_of_range()
+```
+
+```cpp
+a.erase(a.begin()+3);     // Remove a[3], shifts elements towards back
+
+a.erase(std::remove_if(a.begin(), a.end(), IsOdd), a.end());
+                          // Erase-remove idiom (faster than erasing one-by-one in a for loop)
+                          // Remove_if points to the element after all non-removed elements
+
+a.insert(a.begin()+2,12)  // Make a[2] 12; shifts remaining to the right (linear complexity)
+
+for (int& p : a)
+  p=0;                    // C++11: Set all elements of a to 0
+
+for (vector<int>::iterator p=a.begin(); p!=a.end(); ++p)
+  *p=0;                   // C++03: Set all elements of a to 0
+
+vector<int> b(a.begin(), a.end());  // same as b = a;
+vector<T> c(n, x);        // c[0]..c[n-1] init to x
+T d[10]; vector<T> e(d, d+10);      // e is initialized from d
+```
+
+
+## `deque` (Stack queue: rapid insertions/deletions on front and back; direct acess)
+
+`deque<T>` is like `vector<T>`, but also supports (at the cost of being slower):
+
+```cpp
+#include <deque>          // Include deque (std namespace)
+deque a<int>;
+a.push_front(x);          // Puts x at a[0], shifts elements toward back
+a.pop_front();            // Removes a[0], shifts toward front
+```
+
+
+## `list` (Doubly linked list: rapid insertion/deletion everywhere, no direct access to elements)
+
+`list<T>` is efficient at both forward/backward traversal, but cannot access specified index without accessing all on the left/right.
+Therefore you can't do l[3] and neither l.begin()+3; only it++ and it--.
+
+```cpp
+list<int> l = {1,2,8,9,12,2};
+auto it = find(l.begin(),l.end(),9);
+l.insert(it,23);
+l.remove(8);   // remove all elements == 8; reduce container size
+l.remove_if(f) // same as above but use f as comp
+l.sort();      // only for lists, use std::sort for vector or deque
+```
+
+
+## `array` (Statically sized array: lightweight wrapper around C array)
+
+As with C arrays, size must be known at compile time.
+
+```cpp
+array<int,3> houses = {1,2,4};
+houses.at(2)                   // Return 4
+for (const auto& s: houses) {} // Range-based for loop is supported
+houses.size()                  // Return 3
+```
+
+
+## `utility` (Pair)
+
+```cpp
+#include <utility>               // Include utility (std namespace)
+pair<string, int> a("hello", 3); // A 2-element struct
+a.first;                         // "hello"
+a.second;                        // 3
+```
+
+
+## `map` (Associative container)
+
+If order is not important, use `unordered_map` instead.
+
+```cpp
+#include <map>            // Include map (std namespace)
+map<string, int> a;       // Map from string to int
+a["hello"] = 3;           // Add or replace element a["hello"]
+a.erase("hello");         // Erase by key
+a.clear();                // Erase all map elements, leaving size at 0
+for (auto& p:a) cout << p.first << p.second;  // Prints hello, 3
+a.size();                 // 1
+a.empty()                 // Same as !a.size()
+```
+
+
+## `set` (Store unique elements ordered)
+
+For insertion to work, the operator < must be defined between two objects of used type.
+Elements are considered duplicates (therefore not added) when !(a < b) && !(b < a).
+
+```cpp
+#include <set>            // Include set (std namespace)
+set<int> s;               // Set of integers
+s.insert(123);            // Add element to set
+if (s.find(123) != s.end()) s.erase(123); // erase 123
+cout << s.size();         // Number of elements in set
+```
+
+
+## `algorithm` (A collection of 60 algorithms on sequences with iterators)
+
+```cpp
+#include <algorithm>                   // Include algorithm (std namespace)
+min(x, y); max(x, y);                  // Smaller/larger of x, y (any type defining <)
+swap(x, y);                            // Exchange values of variables x and y
+sort(a, a+n);                          // Sort array a[0]..a[n-1] by <
+sort(a.begin(), a.end());              // Sort vector or deque
+sort(a.begin(), a.end(), f);           // Sort array or deque using f as comp (change order if f)
+                                       // f should be like bool f(T a, T b){return a<b;}
+
+reverse(a.begin(), a.end());           // Reverse vector or deque
+find(a.begin(),a.end(),value);         // Return pointer to first value if found, else a.end()
+binary_search(a.begin(),a.end(),value);// Same as above but only on sorted containers with random access
+count(a.begin(),a.end(),value);        // Return number of occurrences of value in container a
+search(a.begin(),a.end(),value.begin(),value.end() // Return iterator to first ocurrence of sequence value
+remove(a.begin(),a.end(),value);       // Places non-removed elements on top of removed ones
+                                       // Capacity is not changed; returns pointer to after the last non-removed element
+```
+
+
+## `chrono` (Time related library)
+
+```cpp
+#include <chrono>         // Include chrono
+using namespace std::chrono
+auto from = high_resolution_clock::now();
+// ... do some work    
+auto to = high_resolution_clock::now();
+using ms = duration<float, milliseconds::period>;
+cout << duration_cast<ms>(to - from).count() << "ms";
+```
+
+
+## C style random integers
+
+```cpp
+#include <chrono>
+using namespace std::chrono;
+
+auto seed =               // Get time since 1 Jan 1970 (useful for random generator seed)
+  system_clock::now().time_since_epoch().count();
+
+srand(seed);              // Initialize random generator (only once in entire program)
+rand() % b + a;           // Return integer in range [a,b+a[
+```
