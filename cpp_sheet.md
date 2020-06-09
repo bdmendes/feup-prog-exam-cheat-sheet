@@ -496,7 +496,7 @@ class Student : public FeupPerson {
 public:
     Student(string name, int id): FeupPerson(name), _id(id) {};
                                   // Cannot instantiate _name here; delegate base constructor
-    int getId() const override {return _id};
+    int getId() const override {return _id;};
 private:
     int _id;
 };
@@ -507,8 +507,8 @@ Student s("Elegant", 2019);
 p = s; // possible but data is sliced away - slicing problem (s=p is illegal)
 
 std::unordered_set<FeupPerson*> mySet; // Polymorfic since FeupPerson might be a Student as well
-mySet.insert(p);
-mySet.insert(s); // s is implicitly interpreted as FeupPerson
+mySet.insert(&p);
+mySet.insert(&s); // Student* implicitly becomes FeupPerson*
 
 for (const auto& p: mySet){
 
