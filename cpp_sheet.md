@@ -747,7 +747,7 @@ a.empty()                 // Same as !a.size()
 ```
 
 
-## `set` (Store unique elements ordered)
+## `set` (store unique elements ordered)
 
 For insertion to work, the operator < must be defined between two objects of used type.
 Elements are considered duplicates (therefore not added) when !(a < b) && !(b < a).
@@ -764,10 +764,17 @@ cout << s.size();         // Number of elements in set
 ```
 
 
-## `algorithm` (A collection of 60 algorithms on sequences with iterators)
+## `unordered_set` (store unique elements without specific order)
+
+Same as above, but out of order, thus faster.
+Instead of defining the < operator you must define ==.
+
+
+## `algorithm` (collection of 60 algorithms on sequences with iterators)
 
 ```cpp
 #include <algorithm>                   // Include algorithm (std namespace)
+
 min(x, y); max(x, y);                  // Smaller/larger of x, y (any type defining <)
 swap(x, y);                            // Exchange values of variables x and y
 sort(a, a+n);                          // Sort array a[0]..a[n-1] by <
@@ -785,7 +792,7 @@ remove(a.begin(),a.end(),value);       // Places non-removed elements on top of 
 ```
 
 
-## `chrono` (Time related library)
+## `chrono` (time related library)
 
 ```cpp
 #include <chrono>
