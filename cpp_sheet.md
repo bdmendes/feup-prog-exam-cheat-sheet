@@ -419,13 +419,13 @@ public:                     // Accessible to all
     {return x;}             // Allows int(t)
     
     int operator()(int a) const
-    {return x+a;}           // One can now do T obj; int sumObj = obj(a); -> Functors (function objects)
+    {return x+a;}           // One can now do T obj; int sumObj = obj(a);
                             // Functors are useful to pass to STL algorithms since they hold state
 
-    friend void i();        // i() now has private access (friendship is given by T, not claimed by i())
-    friend class U;         // Members of class U now have private access
+    friend void i();        // i() has private access (friendship is given by T, not claimed by i())
+    friend class U;         // Members of class U have private access
     static int y;           // Data shared by all T objects
-    static void l();        // Shared code.  May access y but not x
+    static void l();        // Shared code. May access y but not x
 };
 ```
 
@@ -560,7 +560,7 @@ fabs(x); fmod(x, y);        // Absolute value, x mod y
 ```
 
 
-## `assert.h`, `cassert` - debugging Aid)
+## `assert.h`, `cassert` - debugging aid
 
 ```cpp
 #include <cassert>        // Include iostream (std namespace)
@@ -744,7 +744,7 @@ a.second;                        // 3
 ```
 
 
-## `map` (ordered associative container)
+## `map` - ordered associative container
 
 If order is not important, use `unordered_map` instead.
 
@@ -760,7 +760,7 @@ a.empty()                 // Same as !a.size()
 ```
 
 
-## `set` (store unique elements ordered)
+## `set` - store unique elements ordered
 
 For insertion to work, the operator < must be defined between two objects of used type.
 Elements are considered duplicates (therefore not added) when !(a < b) && !(b < a).
@@ -777,13 +777,13 @@ cout << s.size();         // Number of elements in set
 ```
 
 
-## `unordered_set` (store unique elements without specific order)
+## `unordered_set` - store unique elements without specific order
 
 Same as above, but out of order, thus faster.
 Instead of defining the < operator you must define ==.
 
 
-## `algorithm` (collection of 60 algorithms on sequences with iterators)
+## `algorithm` - collection of 60 algorithms on sequences with iterators
 
 ```cpp
 #include <algorithm>                   // Include algorithm (std namespace)
@@ -809,7 +809,7 @@ remove(a.begin(),a.end(),value);       // Place non-removed elements at the begg
 ```
 
 
-## `chrono` (time related library)
+## `chrono` - time related library
 
 ```cpp
 #include <chrono>
