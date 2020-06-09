@@ -325,8 +325,9 @@ T(x,y)                      // Object of class T initialized with x and y
 typeid(x)                   // Returns referebce to object of type of x (access name with .name())
 
 dynamic_cast<T>(x)          // Converts x to a T, checked at run time
-                            // May convert child class to parent, with slicing data problems
-                            // Doing the reverse isn't possible: nullptr or exception
+                            // T must be a pointer
+                            // May convert between classes
+                            // Fail in conversion returns nullptr
                             
 static_cast<T>(x)           // Converts x to a T, for simple data types
                             // Alerts when possible truncation issues (which C-style casts do not do)
@@ -464,31 +465,60 @@ struct T {                  // Equivalent to: class T { public:
   T();                      // Class constructor 
   virtual void i();         // May be overridden at run time by derived class
   virtual void g(int x)=0;  // Must be overridden (pure virtual)
+                            // Doing this T becomes an abstract class that cannot be instantiated!
 };
 
 class U: public T {         // Derived class U inherits all members of base T
   public:
   U(): T();                 // Base class constructors are not inherited; use delegation like this
-  void g(int x) override;   // Explicitly override method g
+  void g(int x) override;   // Explicitly override method g (do not use override in the definition)
   void g(int x);            // Same as above but compiler does not check if g is virtual in T
   int y;                    // Specific of U, will get sliced away if U is interpreted as a T
 };  
 ```
 
-Mind possible data slicing problems:
+To solve data slicing problems use virtual functions and dynamic_casts:
 
 ```cpp
-class FeupPerson {};
-class Student : public FeupPerson {};
-FeupPerson p;
-Student s;
+class FeupPerson {
+public:
+    FeupPerson(string name): _name(name){};
+    string getName() const {return _name;}
+    virtual int getId() const{return 0;}; // may be overriden by Student, making this an abstract Class
+    
+                             // making virtual getId() const = 0 would make this pure virtual
+                             // in that case, instantiation of FeupPerson objects would be denied
+protected:
+    string _name;
+};
+
+class Student : public FeupPerson {
+public:
+    Student(string name, int id): FeupPerson(name), _id(id) {};
+                                  // Cannot instantiate _name here; delegate base constructor
+    int getId() const override {return _id};
+private:
+    int _id;
+};
+
+FeupPerson p("Compact");
+Student s("Elegant", 2019);
 
 p = s; // possible but data is sliced away - slicing problem (s=p is illegal)
 
-std::vector<FeupPerson> p(3); // polymorfic since FeupPerson might be a Student as well
+std::unordered_set<FeupPerson*> mySet; // Polymorfic since FeupPerson might be a Student as well
+mySet.insert(p);
+mySet.insert(s); // s is implicitly interpreted as FeupPerson
 
-p[1] = Student(); // possible but data is sliced away yet again
-                  // use virtual methods to fix this issue
+for (const auto& p: mySet){
+
+    if (dynamic_cast<Student*>(p) != nullptr){ // if conversion to Student is successful
+         std::cout << "This is a student! \n";
+    }
+    std::cout << "id: " << p->getId << endl;
+              // the correct version of the member function (returning 0 or _id) is called
+}
+
 ```
 
 
@@ -767,7 +797,11 @@ Elements are considered duplicates (therefore not added) when !(a < b) && !(b < 
 
 ```cpp
 #include <set>            // Include set (std namespace)
+
 set<int> s;               // Set of integers
+std::set<Player*,decltype(comp)*> players(comp); // Use comp as comparison function
+                                                 // Useful for pointers; alternative for overloading <
+
 s.insert(123);            // Add element to set
 
 if (s.find(123) != s.end()) // find is set specific (use std::find for other containers)
