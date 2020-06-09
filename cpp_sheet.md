@@ -206,8 +206,8 @@ const int& cr=x;            // cr is a reference (alias) of int that is constant
 
 ```cpp
 int x;                      // Declare x in the stack. It's automatically popped at end of scope
-static int x;               // Global lifetime even if local scope; cannot be used in other translation units
-extern int x;               // So that the compiler is able to access x declared in other translation units
+static int x;               // Global lifetime even if local scope; cannot be used outside with extern
+extern int x;               // Compiler is able to access x declared in other translation units
 ```
 
 
@@ -234,7 +234,7 @@ for (t elem : container) a; // Range-based for loop - do a; for each COPY of ele
 do a; while (x);            // Equivalent to: a; while(x) a;
 
 switch (x) {                // x must be integer known at compile time
-    case X1: a;             // if x == X1, do a; b; c; (everyting is executed until break or out of scope)
+    case X1: a;             // if x == X1, do a; b; c; (everyting is executed until break)
     case X2: b;             // if x == X2, do b; c; (use break if c; is not desired)
     default: c;             // Same as if (true)
 }
@@ -270,19 +270,19 @@ catch (...) { doSomething(); }    // if a throws something else, jump here
 ## Functions
 
 ```cpp
-int f(int x, int y);      // f is a function taking 2 ints BY COPY and returning int BY COPY
-Player& f(Player &x);     // f is a function taking 1 Player BY REFERENCE and returning it BY REFERENCE
-                          // make sure that the return object does not get popped out of stack/scope!
+int f(int x, int y);     // f is a function taking 2 ints BY COPY and returning int BY COPY
+Player& f(Player &x);    // f is a function taking 1 Player BY REFERENCE and returning it BY REFERENCE
+                         // make sure that the return object does not get popped out of stack/scope!
 
-int f(int x);             // f is a overload of f (change parameters, return type alone is not sufficient)
-void f();                 // f is a procedure taking no arguments
-void f(int a=0);          // Default parameters always come after non-default ones
-f();                      // Default return type is int (bad practice to hide this info)
-inline f() {statement;}   // Optimize for speed when defined in this translation unit
-f() { statements; }       // Function definition (must be global)
-T operator-(T x);         // allows T a; T b = -a;
-T operator++(int);        // postfix ++ or -- (parameter ignored)
-extern "C" {void f();}    // f() was compiled in C
+int f(int x);            // overload of f (change parameters, return type alone is not enough)
+void f();                // f is a procedure taking no arguments
+void f(int a=0);         // Default parameters always come after non-default ones
+f();                     // Default return type is int (bad practice to hide this info)
+inline f() {statement;}  // Optimize for speed when defined in this translation unit
+f() { statements; }      // Function definition (must be global)
+T operator-(T x);        // allows T a; T b = -a;
+T operator++(int);       // postfix ++ or -- (parameter ignored)
+extern "C" {void f();}   // f() was compiled in C
 ```
 
 
@@ -326,10 +326,12 @@ typeid(x)                   // Returns referebce to object of type of x (access 
 
 dynamic_cast<T>(x)          // Converts x to a T, checked at run time
                             // May convert child class to parent, with slicing data problems
-                            // Doing the reverse is not possible and will result in nullptr or exception
+                            // Doing the reverse isn't possible: nullptr or exception
+                            
 static_cast<T>(x)           // Converts x to a T, for simple data types
                             // Alerts when possible truncation issues (which C-style casts do not do)
                             // Does not work with classe types
+                            
 reinterpret_cast<T>(x)      // Interpret bits of x as a T
 const_cast<T>(x)            // Casts away const
 
@@ -572,23 +574,23 @@ assert(e);                // if e is false, print message and abort
 ```cpp
 #include <iostream>         // Include iostream (std namespace)
 cin >> x >> y;              // Read words x and y from stdin (set fail flags if types mismatch)
-                            // If x and y are strings, the extract operator stops at whitespaces (consuming them)
-                            // final '\n' (enter) is not consumed, make sure to use cin.ignore() later
+                            // With strings, extract operator stops at whitespaces (consuming them)
+                            // final '\n' (enter) is not consumed, use cin.ignore() later
 
-cout << "x=" << 3 << endl;  // Write line to stdout (endl is equivalent to outputting '\n' and flushing)
+cout << "x=" << 3 << endl;  // Write line to stdout (endl is same as cout << '\n' << flush)
 cerr << x << y << flush;    // Write to stderr and flush
 c = cin.get();              // c = getchar();
 cin.get(c);                 // Read char, store in c, consume it
-cin.peek(c);                // Read chae, store in c, do not consume it (still asks if buffer is empty)
+cin.peek(c);                // Read char, store in c, do not consume it (still asks if buffer is empty)
 cin.getline(s, n, '\n');    // Read line into char s[n] to '\n' (default)
 
 if (cin)                    // Good state (not EOF and not fail)
-cin.clear();                // Set error flags to 0
-cin.ignore(nChars,Delim);   // Necessary after clearing flags; ignore nChars characters or until delimiter found
+cin.clear();                // Set error flags to 0 (use cin.ignore() later)
+cin.ignore(nChars,Delim);   // Ignore nChars characters or until delimiter found
 
-                            // To read/write any type T:
-istream& operator>>(istream& i, T& x) {i >> ...; x=...; return i;} //pass by reference is mandatory
-ostream& operator<<(ostream& o, const T& x) {return o << ...;} //return reference to ostream after outputting to it
+                            // To read/write any type T (pass by reference is mandatory):
+istream& operator>>(istream& i, T& x) {i >> ...; x=...; return i;}
+ostream& operator<<(ostream& o, const T& x) {return o << ...;}
 ```
 
 
@@ -611,7 +613,7 @@ For random access files be aware of stream pointers:
 
 ```cpp
 
-fstream handle("filename",ios::binary); // open in binary mode to access char by char (byte by byte)
+fstream handle("filename",ios::binary); // open in binary mode to access char by char
 
 handle.tellg(); // returns pointer to current location
 handle.seekg(place); // tries to put current reading position at place
@@ -637,7 +639,7 @@ ss >> a >> b;             // a,b strings bacome "Hello" and "World" (no spaces b
 Reaching the end of ss extraction causes eof. To reuse to output:
 
 ```cpp
-ss.str("");               // Different from ss.str(); this clears current contents and sets them as ""
+ss.str("");               // Different from ss.str(); this clears current contents
 ss.clear();               // Clear error flags
 ss << "Now I say hi"      // Reusable again
 ```
@@ -658,7 +660,7 @@ s1.substr(m);             // Substring from s1[m] until end of s1
 s1.c_str();               // Convert to const char*, restricted lifetime
 s1 = to_string(12.05);    // Converts number to string
 getline(cin, s);          // Read line ending in '\n'
-s1.find("hello");         // Return pointer to first char of found substring, if not found string::npos
+s1.find("hello");         // Pointer to first char of found substring, if not found string::npos
 ```
 
 
@@ -685,7 +687,7 @@ a.erase(std::remove_if(a.begin(), a.end(), isOdd), a.end());
 
 a.insert(a.begin()+2,12)  // Make a[2] 12; shifts remaining to the right (linear complexity)
 
-for (int& p : a)  p=0;  // C++11 provides an alternative for iterators
+for (int& p : a)  p=0;  // In C++11 you do not need to use iterators for a quick iteration
 for (vector<int>::iterator p=a.begin(); p!=a.end(); ++p)  *p=0;  // C++03 had no range-based for loop
 
 vector<int> b(a.begin(), a.end());  // same as b = a;
@@ -794,12 +796,16 @@ sort(a.begin(), a.end(), f);           // Sort array or deque using f as comp (c
                                        // f should be like bool f(T a, T b){return a<b;}
 
 reverse(a.begin(), a.end());           // Reverse vector or deque
+
 find(a.begin(),a.end(),value);         // Return pointer to first value if found, else a.end()
-binary_search(a.begin(),a.end(),value);// Same as above but only on sorted containers with random access
+binary_search(a.begin(),a.end(),value);// Same as above but container must be sorted
+
 count(a.begin(),a.end(),value);        // Return number of occurrences of value in container a
-search(a.begin(),a.end(),sequence.begin(),sequence.end(); // Return iterator to first ocurrence of sequence
-remove(a.begin(),a.end(),value);       // Places non-removed elements at the beggining of the container
-                                       // Capacity isn't changed; returns pointer to after last non-removed element
+search(a.begin(),a.end(),sequence.begin(),sequence.end(); // Iterator to first ocurrence of sequence
+
+remove(a.begin(),a.end(),value);       // Place non-removed elements at the beggining
+                                       // Capacity isn't changed
+                                       // Returns pointer to after last non-removed element
 ```
 
 
@@ -825,7 +831,7 @@ cout << duration_cast<ms>(to - from).count() << "ms";
 #include <chrono>
 using namespace std::chrono;
 
-auto seed =               // Get time since 1 Jan 1970 (useful for random generator seed)
+auto seed =               // Get time since 1 Jan 1970
   system_clock::now().time_since_epoch().count();
 
 srand(seed);              // Initialize random generator (only once in entire program)
