@@ -633,7 +633,7 @@ For specific input/output only purposes, use `istringstream` and `ostringstream`
 stringstream ss("Hello"); // same as stringstream m; m << "Hello";
 ss << " World";           // same syntax as cout, cin
 ss.str();                 // Return "Hello World"
-ss >> a >> b;             // a,b strings bacome "Hello" and "World" (no spaces because of >>)
+ss >> a >> b;             // a,b strings become "Hello" and "World" (no spaces because of >>)
 ```
 
 Reaching the end of ss extraction causes eof. To reuse to output:
