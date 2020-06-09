@@ -174,7 +174,8 @@ int *p,*a;                  // p and a are pointers to ints (* before a is neces
 char* s="hello";            // s points to first element of array
 void* p=nullptr;            // Address of untyped memory (nullptr is 0)
 int& r=x;                   // r is a reference to (alias of) int x
-int* r=x;                   // r is memory location of x (dereference later to get object: int myInt = *r;)
+int* r=x;                   // r is memory location of x
+                            // Dereference later to get object: int myInt = *r;
 
 enum weekend {SAT,SUN,MON}; // weekend is a type wrapping global integer values: SAT=0, SUN=1, MON=2
 enum weekend {SAT=14,SUN=3};// Explicit representation as int
@@ -183,7 +184,7 @@ enum weekend day = SAT;     // day is a variable of type weekend (e.g may be 14 
 typedef String char*;       // String s; means char* s;
 
 const int c=3;              // Constants must be initialized, cannot assign to (read-only)
-constexpr int = d;          // Same as above but d must be known at compile time (e.g. d may not be a parameter)
+constexpr int = d;          // Same but d must be known at compile time (e.g. d cannot be a parameter)
 
 int8_t,uint8_t,int16_t,
 uint16_t,int32_t,uint32_t,
@@ -251,45 +252,51 @@ return x;                   // Return x from function to caller
 
 try {
   doSomething(); // this may throw an exception
-  throw invalid_argument("received negative value"); // you may throw an object yourself (in this case an exception)
+  
+  throw invalid_argument("received negative value");
+                 // you may throw an object yourself (in this case an exception)
 }
-catch (exception t) { // if doSomething() throws a object of type exception (could be any other), jump here
+
+catch (exception t) { // if t was thrown, catch it (do not crash program)
   fixSomething();
   cout << t.what() << endl; // print error message describing exception
-  throw; // throw t again
+  throw; // throw t again if you want the program to crash
 }
-catch (...) { c; }          // if a throws something else, jump here
+
+catch (...) { doSomething(); }    // if a throws something else, jump here
 ```
 
 
 ## Functions
 
 ```cpp
-int f(int x, int y);        // f is a function taking 2 ints BY COPY and returning int BY COPY
-Player& f(Player &x);       // f is a function taking 1 Player BY REFERENCE and returning it BY REFERENCE
-                            // make sure that the return object does not get popped out of stack/scope!
+int f(int x, int y);      // f is a function taking 2 ints BY COPY and returning int BY COPY
+Player& f(Player &x);     // f is a function taking 1 Player BY REFERENCE and returning it BY REFERENCE
+                          // make sure that the return object does not get popped out of stack/scope!
 
-int f(int x);               // f is a overload of f (must change arguments, return type alone is not sufficient)
-void f();                   // f is a procedure taking no arguments
-void f(int a=0);            // Default parameters always come after non-default ones
-f();                        // Default return type is int (bad practice to hide this info)
-inline f() {statement;}     // Optimize for speed when defined in this translation unit
-f() { statements; }         // Function definition (must be global)
-T operator-(T x);           // allows T t, a; t-a;
-T operator++(int);          // postfix ++ or -- (parameter ignored)
-extern "C" {void f();}      // f() was compiled in C
+int f(int x);             // f is a overload of f (change parameters, return type alone is not sufficient)
+void f();                 // f is a procedure taking no arguments
+void f(int a=0);          // Default parameters always come after non-default ones
+f();                      // Default return type is int (bad practice to hide this info)
+inline f() {statement;}   // Optimize for speed when defined in this translation unit
+f() { statements; }       // Function definition (must be global)
+T operator-(T x);         // allows T a; T b = -a;
+T operator++(int);        // postfix ++ or -- (parameter ignored)
+extern "C" {void f();}    // f() was compiled in C
 ```
 
 
 ## Lambda functions
 
+[] is the list of acessible variables from the outer scope. Pass & to allow acess to all.
+
 ```cpp
-int plusTwo= [](int a){ // [] is the list of outside acessible variables. & to allow acess to all outter scope.
-return a+2;
+int plusTwo= [](int a){
+    return a+2;
 };
 
 int a = 3;
-int aPlusTwo = plusTwo(a); // Returns 5
+int b = plusTwo(a); // b = 5;
 ```
 
 
@@ -398,20 +405,23 @@ public:                     // Accessible to all
 
     T(): x(1) {}            // Constructor with initialization list (avoid allocating x twice!)
     T(const T& t): x(t.x) {}// Copy constructor
+    
     T& operator=(const T& t)
     {x=t.x; return *this; } // Assignment operator
+    
     ~T();                   // Destructor (automatic cleanup routine)
     explicit T(int a);      // Allow T t=T(3) but not T t=3
     T(float x): T((int)x) {}// Delegate constructor to T(int)
 
     int operator int() const
     {return x;}             // Allows int(t)
+    
     int operator()(int a) const
     {return x+a;}           // One can now do T obj; int sumObj = obj(a); -> Functors (function objects)
-                            // Functors are useful to pass to STL algorithms since they hold state (class attributes)
+                            // Functors are useful to pass to STL algorithms since they hold state
 
-    friend void i();        // Global function i() has private access (friendship is given by class, not clamed by function)
-    friend class U;         // Members of class U have private access
+    friend void i();        // i() now has private access (friendship is given by T, not claimed by i())
+    friend class U;         // Members of class U now have private access
     static int y;           // Data shared by all T objects
     static void l();        // Shared code.  May access y but not x
 };
@@ -424,6 +434,7 @@ Then define member functions and use the class in implementation files:
 
 void T::f() {               // Code for member function f of class T
     this->x = x;}           // this is address of self (means x=x;)
+    
 int T::y = 2;               // Initialization of static member (required)
 T::l();                     // Call to static member
 T t;                        // Create object t implicit call constructor, same as T t = T();
@@ -456,13 +467,13 @@ struct T {                  // Equivalent to: class T { public:
 class U: public T {         // Derived class U inherits all members of base T
   public:
   U(): T();                 // Base class constructors are not inherited; use delegation like this
-  void g(int x) override;   // Explicitly override method g (if derived g doesn't match any base g, compiler error)
-  void g(int x);            // Same as above but compiler cannot check if g matches
-  int y;                    // Specific characteristic of U, will get sliced away if U is interpreted as a T
+  void g(int x) override;   // Explicitly override method g
+  void g(int x);            // Same as above but compiler does not check if g is virtual in T
+  int y;                    // Specific of U, will get sliced away if U is interpreted as a T
 };  
 ```
 
-Mind a possible data slicing problem:
+Mind possible data slicing problems:
 
 ```cpp
 class FeupPerson {};
@@ -561,7 +572,7 @@ assert(e);                // if e is false, print message and abort
 ```cpp
 #include <iostream>         // Include iostream (std namespace)
 cin >> x >> y;              // Read words x and y from stdin (set fail flags if types mismatch)
-                            // If x and y are strings, the extract operator always stops at whitespaces (consuming them)
+                            // If x and y are strings, the extract operator stops at whitespaces (consuming them)
                             // final '\n' (enter) is not consumed, make sure to use cin.ignore() later
 
 cout << "x=" << 3 << endl;  // Write line to stdout (endl is equivalent to outputting '\n' and flushing)
@@ -696,7 +707,7 @@ a.pop_front();            // Removes a[0], shifts toward front
 
 ## `list` - doubly linked list (rapid insertion/deletion everywhere, no direct access to elements)
 
-`list<T>` is efficient at both forward/backward traversal, but cannot access specified index without accessing all on the left/right.
+You cannot access specified index without accessing all on the left/right.
 Therefore you can't do l[3] and neither l.begin()+3; only it++ and it--.
 
 ```cpp
@@ -787,8 +798,8 @@ find(a.begin(),a.end(),value);         // Return pointer to first value if found
 binary_search(a.begin(),a.end(),value);// Same as above but only on sorted containers with random access
 count(a.begin(),a.end(),value);        // Return number of occurrences of value in container a
 search(a.begin(),a.end(),sequence.begin(),sequence.end(); // Return iterator to first ocurrence of sequence
-remove(a.begin(),a.end(),value);       // Places non-removed elements on top of removed ones
-                                       // Capacity is not changed; returns pointer to after the last non-removed element
+remove(a.begin(),a.end(),value);       // Places non-removed elements at the beggining of the container
+                                       // Capacity isn't changed; returns pointer to after last non-removed element
 ```
 
 
