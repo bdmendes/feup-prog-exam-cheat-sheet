@@ -322,10 +322,10 @@ p-> x                       // Member x of struct or class pointed to by p
 a[i]                        // i'th element of array a
 f(x,y)                      // Call to function f with arguments x and y
 T(x,y)                      // Object of class T initialized with x and y
-typeid(x)                   // Returns referebce to object of type of x (access name with .name())
+typeid(x)                   // Returns reference to object of type of x (access name with .name())
 
 dynamic_cast<T>(x)          // Converts x to a T, checked at run time
-                            // T must be a pointer
+                            // T must be a pointer or reference
                             // May convert between classes
                             // Fail in conversion returns nullptr
                             
