@@ -166,11 +166,17 @@ int a, b, c;                // Multiple declarations
 
 int a[10];                  // Array of 10 ints (a[0] through a[9])
 int a[]={0,1,2};            // Initialized array (or a[3]={0,1,2}; )
+                            // You may deduce size of this by doing sizeof(a)/sizeof(int)
+                            // However sometimes you lose this ability due to pointer decay
+                            // Always pass size as parameter
+
 int a[][2]={{1,2},{4,5}};   // Array of array of ints (only first dimension can be deduced!)
 char s[]="hello";           // String (6 elements including '\0'); same as char* s = "hello"
 std::string s = "Hello";    // same as std::string s("Hello"); calls default constructor
 
 int *p,*a;                  // p and a are pointers to ints (* before a is necessary!)
+                            // you can't deduce size of this
+
 char* s="hello";            // s points to first element of array
 void* p=nullptr;            // Address of untyped memory (nullptr is 0)
 int& r=x;                   // r is a reference to (alias of) int x
@@ -556,7 +562,8 @@ class X {
 template <class T>
 X<T>::X(T t) {}
 
-template <class T, class U=T, int n=0>     // Template with default parameters
+template <class T, unsigned long n=0>     // Template with default parameters
+T f(std::array<int,n> myArray);
 ```
 
 Then use them for your specific needs:
@@ -796,8 +803,6 @@ l.sort();      // only for lists, use std::sort for vector or deque
 
 
 ## `array` - statically sized array (lightweight wrapper around C array)
-
-As with C arrays, size must be known at compile time.
 
 ```cpp
 #include <array> (std namespace)
