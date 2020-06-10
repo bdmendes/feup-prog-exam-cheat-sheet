@@ -640,7 +640,7 @@ cin.peek(c);                // Read char, store in c, do not consume it (still a
 cin.getline(s, n, '\n');    // Read line into char s[n] to '\n' (default)
 
 if (cin)                    // Good state (not EOF and not fail)
-cin.clear();                // Set error flags to 0 (use cin.ignore() later)
+if (!cin) cin.clear();      // Set error flags to 0 (use cin.ignore() later)
 cin.ignore(nChars,Delim);   // Ignore nChars characters or until delimiter found
 ```
 
