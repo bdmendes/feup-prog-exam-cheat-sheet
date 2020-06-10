@@ -800,7 +800,8 @@ Elements are considered duplicates (therefore not added) when !(a < b) && !(b < 
 ```cpp
 #include <set>            // Include set (std namespace)
 
-set<int> s;               // Set of integers
+set<int> s;               // Empty set of integers
+set<int> s(v.vegin(), v.end());   // Construct with iterators
 std::set<Player*,decltype(comp)*> players(comp); // Use comp as comparison function
                                                  // Useful for pointers; alternative for overloading <
 
