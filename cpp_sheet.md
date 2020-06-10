@@ -456,7 +456,7 @@ t.f();                      // Call method f on object t
 ```
 
 
-## Class inheritance and polymorfism
+## Class inheritance and polymorphism
 
 Mind the acccess between base and child class members:
 
