@@ -528,12 +528,12 @@ for (const auto& p: mySet){
 "Overload" a class/function/method for all types:
 
 ```cpp
-template <class T>
+template <class T>         // Same as template <typename T>
 T f(T t);
 
 template <class T>
 class X {
-  X(T t); };                // A constructor
+  X(T t); };
 
 template <class T>
 X<T>::X(T t) {}
