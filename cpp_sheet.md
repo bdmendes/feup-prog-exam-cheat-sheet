@@ -665,7 +665,7 @@ ss << " Nice";                  // same syntax as cout, cin
 ss.str();                       // Return "Hello World"
 ss >> a >> b;                   // a,b strings become "Hello" and "World" (no spaces because of >>)
 while (ss >> a)                 // read words into a until ss.eof() or ss.fail()
-while (getline(ss,a))           // read lines (until '\n') until ss.eof() or ss.fail()
+while (getline(ss,a))           // read lines (until '\n') into a until ss.eof() or ss.fail()
 ```
 
 Reaching the end of ss extraction causes eof. To reuse to output:
