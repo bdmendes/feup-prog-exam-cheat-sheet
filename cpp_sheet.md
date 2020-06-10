@@ -528,8 +528,8 @@ for (const auto& p: mySet){
 "Overload" a class/function/method for all types:
 
 ```cpp
-template <class T> T
-f(T t);
+template <class T>
+T f(T t);
 
 template <class T>
 class X {
