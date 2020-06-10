@@ -633,7 +633,7 @@ ifstream f1("filename");    // Open text file for reading
 if (f1)                     // Test if open and input available
     f1 >> x;                // Read object from file 
 f1.get(c);                  // Read char or line
-while (f1.getline(str, n)) outputStream << str;        // Read file line by line, output to stream
+while (f1.getline(inputStream, strng)) outputStream << strng;     // Read file line by line, output to stream
 
 ofstream f2("filename");    // Open file for writing
 if (f2) f2 << x;            // Write to file
