@@ -222,7 +222,7 @@ int x;x=y;                  // Declarations and assignements are statements
 }
 
 if (x) a;                   // if x is true (not 0), evaluate a
-else if (y) b;              // if not x and y (optional, may be repeated)
+else if (y) b;              // if not x and y (optional, may be ed)
 else c;                     // if not x and not y (optional)
 
 while (cond) a;             // Repeat while cond is true (if cond is int -> cond!=0)
@@ -706,6 +706,8 @@ s1.find("hello");         // Pointer to first char of found substring, if not fo
 ## `vector` - dynamic array (rapid insertions/deletions on back; direct access)
 ```cpp
 #include <vector>         // Include vector (std namespace)
+
+vector<vector<T>> nested; // Nested vector (2D in this case)
 vector<int> a(10);        // a[0]..a[9] are int (default size is 0)
 vector<int> b{1,2,3};     // Create vector with values 1,2,3
 a.size();                 // Number of elements (10)
@@ -716,6 +718,10 @@ a.pop_back();             // Decrease size by 1
 a.front();                // a[0];
 a[20]=1;                  // Segmenation fault
 a.at(20)=1;               // Like a[20] but throws out_of_range()
+a.resize(15);             // Make vector size 15
+                          // If new size is less than current, diff elements are demolished
+                          // If new size is larger, memory is reserved, but nothing's on the new indexes yet
+                          // eg. make sure to do a.at(14) = value; before trying to access that index contents
 
 a.erase(a.begin()+3);     // Remove a[3], shifts elements towards back
 
@@ -731,6 +737,8 @@ for (vector<int>::iterator p=a.begin(); p!=a.end(); ++p)  *p=0;  // C++03 had no
 
 vector<int> b(a.begin(), a.end());  // same as b = a;
 vector<T> c(n, x);        // c[0]..c[n-1] init to x
+                          // you use this syntax to initialize nested vectors
+                          // eg. vector<T> c(nLines,vector<T>(nCols,valueToRepeat))
 ```
 
 
