@@ -522,7 +522,9 @@ for (const auto& p: mySet){
 ```
 
 
-## Templates - overload for all types
+## Templates - generic programming
+
+"Overload" a class/function/method for all types:
 
 ```cpp
 template <class T> T
@@ -531,13 +533,17 @@ f(T t);
 template <class T>
 class X {
   X(T t); };                // A constructor
-  
+
 template <class T>
 X<T>::X(T t) {}
 
-X<int> x(3);                // An object of type "X of int"
-
 template <class T, class U=T, int n=0>     // Template with default parameters
+```
+
+Then use them for your specific needs:
+
+```cpp
+X<int> x(3);                // Declare an object of type "X of int"
 ```
 
 
