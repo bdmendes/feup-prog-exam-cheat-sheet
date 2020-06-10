@@ -371,7 +371,7 @@ x || y                      // x or else y (evaluates y only if !x)
 x = y                       // Assign y to x, returns new value of x
 x += y                      // x = x + y, also -= *= /= <<= >>= &= |= ^=
 
-x ? y : z                   // y if x, else z
+x ? y : z                   // y if x, else z (ternary operator)
 throw x                     // Throw exception, aborts if not caught
 ```
 
@@ -389,7 +389,7 @@ union Numbers
 ```
 
 
-## Classes
+## Classes; operator overloading
 
 Define the class in a header file:
 
@@ -404,8 +404,13 @@ public:                     // Accessible to all
     void f();               // Member function
     void g() {return;}      // Inline member function
     void h() const;         // Does not modify any data members
+    
     int operator+(int y);   // t+y means t.operator+(y)
     int operator-();        // -t means t.operator-()
+    
+    T& operator++();        // ++t means t.operator++()
+    T operator++(int);      // t++ means t.operator++(int)
+                            // int is a dummy parameter meaning postfix operator
 
     T(): x(1) {}            // Constructor with initialization list (avoid allocating x twice!)
     T(const T& t): x(t.x) {}// Copy constructor (still a constructor... initialize T attributes)
@@ -414,6 +419,8 @@ public:                     // Accessible to all
     {x=t.x; return *this; } // Assignment operator
     
     ~T();                   // Destructor (automatic cleanup routine)
+                            // Put manual memory deallocations here if needed
+    
     explicit T(int a);      // Allow T t=T(3) but not T t=3
     T(float x): T((int)x) {}// Delegate constructor to T(int)
 
@@ -672,12 +679,11 @@ For specific input/output only purposes, use `istringstream` and `ostringstream`
 ```cpp
 #include <sstream> (std namespace)
 
-stringstream ss("Hello world"); // same as stringstream m; m << "Hello" << "World";
-ss << " Nice";                  // same syntax as cout, cin
+stringstream ss("Hello World"); // same as stringstream m; m << "Hello" << " World";
 ss.str();                       // Return "Hello World"
-ss >> a >> b;                   // a,b strings become "Hello" and "World" (no spaces because of >>)
-while (ss >> a)                 // read words into a until ss.eof() or ss.fail()
-while (getline(ss,a))           // read lines (until '\n') into a until ss.eof() or ss.fail()
+ss << 127;                      // operator << is overloaded for number types
+while (ss >> a) temp+=a;        // extract all ss words; all spaces are stripped (>> operator)
+while (getline(ss,a))           // read lines; spaces are kept
 ```
 
 Reaching the end of ss extraction causes eof. To reuse to output:
