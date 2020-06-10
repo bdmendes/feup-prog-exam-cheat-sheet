@@ -378,7 +378,7 @@ throw x                     // Throw exception, aborts if not caught
 
 ## Unions
 
-Memory location of all members is the same; only one may be used at given time.
+Memory location of all members is the same, its size being determined by the largest of the data members. Only one may be used at given time.
 
 ```cpp
 union Numbers
@@ -386,6 +386,9 @@ union Numbers
     int x;
     double d;
 };
+
+union Numbers n; // if you do union Numbers* n, access by n->x
+n.x = 2; // n.d also gets value 2
 ```
 
 
