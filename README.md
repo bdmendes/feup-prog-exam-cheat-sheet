@@ -1,1 +1,1 @@
-# PROG_Exam_Cheat_Sheet
+Help material for the C/C++ introductory course exam at FEUP.
