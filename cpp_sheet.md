@@ -407,7 +407,7 @@ public:                     // Accessible to all
     int operator-();        // -t means t.operator-()
 
     T(): x(1) {}            // Constructor with initialization list (avoid allocating x twice!)
-    T(const T& t): x(t.x) {}// Copy constructor
+    T(const T& t): x(t.x) {}// Copy constructor (still a constructor... initialize T attributes)
     
     T& operator=(const T& t)
     {x=t.x; return *this; } // Assignment operator
@@ -801,7 +801,7 @@ Elements are considered duplicates (therefore not added) when !(a < b) && !(b < 
 #include <set>            // Include set (std namespace)
 
 set<int> s;               // Empty set of integers
-set<int> s(v.vegin(), v.end());   // Construct with iterators
+set<int> s(v.begin(), v.end());   // Construct with iterators
 std::set<Player*,decltype(comp)*> players(comp); // Use comp as comparison function
                                                  // Useful for pointers; alternative for overloading <
 
@@ -873,4 +873,22 @@ auto seed =               // Get time since 1 Jan 1970
 
 srand(seed);              // Initialize random generator (only once in entire program)
 rand() % b + a;           // Return integer in range [a,b+a[
+```
+
+## `ctype.h` - some C Standard Library functions
+
+```
+    isalpha() – Used to check if the character is an alphabet or not.
+    isdigit() – Used to check if the character is a digit or not.
+    isalnum() – Used to check if the character is alphanumeric or not.
+    isupper() – Used to check if the character is in uppercase or not
+    islower() – Used to check if the character is in lowercase or not.
+    toupper() – Used to convert the character into uppercase.
+    tolower() – Used to convert the character into lowercase.
+    iscntrl() – Used to check if the character is a control character or not.
+    isgraph() – Used to check if the character is a graphic character or not.
+    isprint() – Used to check if the character is a printable character or not
+    ispunct() – Used to check if the character is a punctuation mark or not.
+    isspace() – Used to check if the character is a white-space character or not.
+    isxdigit() – Used to check if the character is hexadecimal or not.
 ```
