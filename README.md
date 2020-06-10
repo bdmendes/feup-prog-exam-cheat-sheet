@@ -1,1 +1,1 @@
-Help material for the C/C++ introductory course exam at FEUP.
+If anything's missing, please do tell
