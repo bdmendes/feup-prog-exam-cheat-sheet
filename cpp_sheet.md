@@ -893,7 +893,7 @@ rand() % b + a;           // Return integer in range [a,b+a[
     tolower() – Used to convert the character into lowercase.
     iscntrl() – Used to check if the character is a control character or not.
     isgraph() – Used to check if the character is a graphic character or not.
-    isprint() – Used to check if the character is a printable character or not
+    isprint() – Used to check if the character is a printable character or not.
     ispunct() – Used to check if the character is a punctuation mark or not.
     isspace() – Used to check if the character is a white-space character or not.
     isxdigit() – Used to check if the character is hexadecimal or not.
