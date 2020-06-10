@@ -881,7 +881,7 @@ srand(seed);              // Initialize random generator (only once in entire pr
 rand() % b + a;           // Return integer in range [a,b+a[
 ```
 
-## `ctype.h` - some C Standard Library functions
+## `ctype.h` - some C Standard Library predicates
 
 ```
     isalpha() – Used to check if the character is an alphabet or not.
