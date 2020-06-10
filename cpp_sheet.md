@@ -323,6 +323,7 @@ a[i]                        // i'th element of array a
 f(x,y)                      // Call to function f with arguments x and y
 T(x,y)                      // Object of class T initialized with x and y
 typeid(x)                   // Returns reference to object of type of x (access name with .name())
+typedef long l;             // same as using l = long;
 
 dynamic_cast<T>(x)          // Converts x to a T, checked at run time
                             // T must be a pointer or reference
@@ -863,7 +864,9 @@ auto from = high_resolution_clock::now();
 // ... do some work    
 
 auto to = high_resolution_clock::now();
-using ms = duration<float, milliseconds::period>;
+
+using ms = duration<float, milliseconds::period>; // same as typedef duration<float, milliseconds::period> ms;
+
 cout << duration_cast<ms>(to - from).count() << "ms";
 ```
 
@@ -883,18 +886,25 @@ rand() % b + a;           // Return integer in range [a,b+a[
 
 ## `ctype.h` - some C Standard Library predicates
 
+Some predicates:
+
+```cpp
+isalpha() – Used to check if the character is an alphabet or not.
+isdigit() – Used to check if the character is a digit or not.
+isalnum() – Used to check if the character is alphanumeric or not.
+isupper() – Used to check if the character is in uppercase or not
+islower() – Used to check if the character is in lowercase or not.
+iscntrl() – Used to check if the character is a control character or not.
+isgraph() – Used to check if the character is a graphic character or not.
+isprint() – Used to check if the character is a printable character or not.
+ispunct() – Used to check if the character is a punctuation mark or not.
+isspace() – Used to check if the character is a white-space character or not.
+isxdigit() – Used to check if the character is hexadecimal or not.
 ```
-    isalpha() – Used to check if the character is an alphabet or not.
-    isdigit() – Used to check if the character is a digit or not.
-    isalnum() – Used to check if the character is alphanumeric or not.
-    isupper() – Used to check if the character is in uppercase or not
-    islower() – Used to check if the character is in lowercase or not.
-    toupper() – Used to convert the character into uppercase.
-    tolower() – Used to convert the character into lowercase.
-    iscntrl() – Used to check if the character is a control character or not.
-    isgraph() – Used to check if the character is a graphic character or not.
-    isprint() – Used to check if the character is a printable character or not.
-    ispunct() – Used to check if the character is a punctuation mark or not.
-    isspace() – Used to check if the character is a white-space character or not.
-    isxdigit() – Used to check if the character is hexadecimal or not.
+
+And to manipulate characters:
+
+```cpp
+toupper() – Used to convert the character into uppercase.
+tolower() – Used to convert the character into lowercase.
 ```
