@@ -429,6 +429,9 @@ public:                     // Accessible to all
     
     T& operator=(const T& t)
     {x=t.x; return *this; } // Assignment operator
+                            // The compiler creates a default one for coincident class types
+                            // The default one may raise issues such as unwanted aliasing
+                            // eg. there are pointers as attributes of the class
     
     ~T();                   // Destructor (automatic cleanup routine)
                             // Put manual memory deallocations here if needed
@@ -652,7 +655,7 @@ cin.ignore(nChars,Delim);   // Ignore nChars characters or until delimiter found
 ```
 
 Any function that returns a stream must use references.
-To overload the << and >> operators for any stream:
+To overload operators for streams:
 
 ```cpp
 istream& operator>>(istream& i, T& x) {i >> ...; x=...; return i;}
@@ -701,7 +704,9 @@ stringstream ss("Hello World"); // same as stringstream m; m << "Hello" << " Wor
 ss.str();                       // Return "Hello World"
 ss << 127;                      // operator << is overloaded for number types
 while (ss >> a) temp+=a;        // extract all ss words; all spaces are stripped (>> operator)
-while (getline(ss,a))           // read lines; spaces are kept
+while (getline(ss,a,'\n')) temp+=a;  // read lines; spaces are kept; '\n' is consumed
+ss >> hour >> comma >> minute;  // If "12:27" is on ss, int hour becomes 12 and int minute 27
+                                // comma must be a char or rest of the string would be consumed
 ```
 
 Reaching the end of ss extraction causes eof. To reuse to output:
@@ -732,8 +737,17 @@ getline(cin, s);          // Read line ending in '\n'
 s1.find("hello");         // Pointer to first char of found substring, if not found string::npos
 ```
 
+## `iomanip` (output manipulation)
+
+```cpp
+// Suppose you have an hour between 0 and 24. To always output in the format HH you can do:
+cout << setfill('0') << setw(2) << std::right << hour << endl;
+                                  // or std::left (center does not exist)
+                                  // instead of cout, you may use stringstream also
+```
 
 ## `vector` - dynamic array (rapid insertions/deletions on back; direct access)
+
 ```cpp
 #include <vector>         // Include vector (std namespace)
 
