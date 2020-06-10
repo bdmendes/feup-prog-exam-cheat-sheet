@@ -464,7 +464,10 @@ Create a child class according to your needs:
 ```cpp
 struct T {                  // Equivalent to: class T { public:
   T();                      // Class constructor 
-  virtual void i();         // May be overridden at run time by derived class
+  
+  virtual void i();         // Virtual -> may be overridden at run time by derived class
+                            // Form of polymorphism at run time
+                            
   virtual void g(int x)=0;  // Must be overridden (pure virtual)
                             // Doing this T becomes an abstract class that cannot be instantiated!
 };
@@ -525,6 +528,7 @@ for (const auto& p: mySet){
 
 ## Templates - generic programming
 
+Like overloading, this kind of polymorphism is compile time defined.
 "Overload" a class/function/method for all types:
 
 ```cpp
