@@ -531,6 +531,7 @@ for (const auto& p: mySet){
     }
     std::cout << "id: " << p->getId << endl;
               // the correct version of the member function (returning 0 or _id) is called
+              // this is because of the virtual keyword
 }
 
 ```
@@ -638,8 +639,12 @@ cin.getline(s, n, '\n');    // Read line into char s[n] to '\n' (default)
 if (cin)                    // Good state (not EOF and not fail)
 cin.clear();                // Set error flags to 0 (use cin.ignore() later)
 cin.ignore(nChars,Delim);   // Ignore nChars characters or until delimiter found
+```
 
-                            // To read/write any type T (pass by reference is mandatory):
+Any function that returns a stream must use references.
+To overload the << and >> operators for any stream:
+
+```cpp
 istream& operator>>(istream& i, T& x) {i >> ...; x=...; return i;}
 ostream& operator<<(ostream& o, const T& x) {return o << ...;}
 ```
