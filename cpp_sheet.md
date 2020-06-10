@@ -666,7 +666,8 @@ if (handle.fail()) handle.clear(); // if place is out of file bounds, clear erro
 For specific input/output only purposes, use `istringstream` and `ostringstream` instead.
 
 ```cpp
-#include <sstream>
+#include <sstream> (std namespace)
+
 stringstream ss("Hello world"); // same as stringstream m; m << "Hello" << "World";
 ss << " Nice";                  // same syntax as cout, cin
 ss.str();                       // Return "Hello World"
@@ -688,6 +689,7 @@ ss << "Now I say hi"      // Reusable again
 
 ```cpp
 #include <string>         // Include string (std namespace)
+
 string s1, s2="hello";    // Create strings
 string repeated('c',4):   // Same as string("cccc");
 s1.size();                // Number of characters ('\n' is not counted)
@@ -737,8 +739,8 @@ for (vector<int>::iterator p=a.begin(); p!=a.end(); ++p)  *p=0;  // C++03 had no
 
 vector<int> b(a.begin(), a.end());  // same as b = a;
 vector<T> c(n, x);        // c[0]..c[n-1] init to x
-                          // you use this syntax to initialize nested vectors
-                          // eg. vector<T> c(nLines,vector<T>(nCols,valueToRepeat))
+                          // you may use this syntax to initialize nested vectors
+                          // eg. vector<vector<T>> c(nLines,vector<T>(nCols,valueToRepeat))
 ```
 
 
@@ -748,6 +750,7 @@ vector<T> c(n, x);        // c[0]..c[n-1] init to x
 
 ```cpp
 #include <deque>          // Include deque (std namespace)
+
 deque a<int>;
 a.push_front(x);          // Puts x at a[0], shifts elements toward back
 a.pop_front();            // Removes a[0], shifts toward front
@@ -760,6 +763,8 @@ You cannot access specified index without accessing all on the left/right.
 Therefore you can't do l[3] and neither l.begin()+3; only it++ and it--.
 
 ```cpp
+#include <list> (std namespace)
+
 list<int> l = {1,2,8,9,12,2};
 auto it = find(l.begin(),l.end(),9);
 l.insert(it,23);
@@ -774,6 +779,8 @@ l.sort();      // only for lists, use std::sort for vector or deque
 As with C arrays, size must be known at compile time.
 
 ```cpp
+#include <array> (std namespace)
+
 array<int,3> houses = {1,2,4};
 houses.at(2)                   // Return 4
 for (const auto& s: houses) {} // Range-based for loop is supported
@@ -785,6 +792,7 @@ houses.size()                  // Return 3
 
 ```cpp
 #include <utility>               // Include utility (std namespace)
+
 pair<string, int> a("hello", 3); // A 2-element struct
 a.first;                         // "hello"
 a.second;                        // 3
@@ -797,6 +805,7 @@ If order is not important, use `unordered_map` instead.
 
 ```cpp
 #include <map>            // Include map (std namespace)
+
 map<string, int> a;       // Map from string to int
 a["hello"] = 3;           // Add or replace element a["hello"]
 a.erase("hello");         // Erase by key
