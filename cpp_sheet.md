@@ -660,10 +660,12 @@ For specific input/output only purposes, use `istringstream` and `ostringstream`
 
 ```cpp
 #include <sstream>
-stringstream ss("Hello"); // same as stringstream m; m << "Hello";
-ss << " World";           // same syntax as cout, cin
-ss.str();                 // Return "Hello World"
-ss >> a >> b;             // a,b strings become "Hello" and "World" (no spaces because of >>)
+stringstream ss("Hello world"); // same as stringstream m; m << "Hello" << "World";
+ss << " Nice";                  // same syntax as cout, cin
+ss.str();                       // Return "Hello World"
+ss >> a >> b;                   // a,b strings become "Hello" and "World" (no spaces because of >>)
+while (ss >> a)                 // read words into a until ss.eof() or ss.fail()
+while (getline(ss,a))           // read lines (until '\n') until ss.eof() or ss.fail()
 ```
 
 Reaching the end of ss extraction causes eof. To reuse to output:
