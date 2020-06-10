@@ -302,6 +302,9 @@ int b = plusTwo(a); // b = 5;
 
 ## Main function
 
+The main functions return the error code, 0 meaning all ok and up something went wrong.
+At any time, use exit(intError) to stop the program and return intError in main.
+
 ```cpp
 int main()  { statements... }     // main is the starting point of any program
 int main(int argc, char* argv[]) { statements... }
