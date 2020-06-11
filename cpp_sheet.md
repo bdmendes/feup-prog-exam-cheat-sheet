@@ -882,7 +882,7 @@ map<string, int> a;       // Map from string to int
 a["hello"] = 3;           // Add or replace element a["hello"]
 a.erase("hello");         // Erase by key
 a.clear();                // Erase all map elements, leaving size at 0
-for (auto& p:a) cout << p.first << ": " << p.second;  // Prints "hello: 3"
+for (const auto& p:a) cout << p.first << ": " << p.second;  // Prints "hello: 3"
 a.size();                 // 1
 a.empty()                 // Same as !a.size()
 ```
@@ -892,6 +892,7 @@ a.empty()                 // Same as !a.size()
 
 For insertion to work, the operator < must be defined between two objects of used type.
 Elements are considered duplicates (therefore not added) when !(a < b) && !(b < a).
+If order is not important, use `unordered_set` instead.
 
 ```cpp
 #include <set>            // Include set (std namespace)
