@@ -686,8 +686,8 @@ a[20]=1;                  // Segmenation fault
 a.at(20)=1;               // Like a[20] but throws out_of_range()
 a.resize(15);             // Make vector size 15
                           // If new size is less than current, diff elements are demolished
-                          // If new size is larger, memory is reserved, but nothing's on the new indexes yet
-                          // eg. make sure to do a.at(14) = value; before trying to access that index contents
+                          // If new size is larger, memory is reserved, but nothing's on contents yet
+                          // eg. do a.at(14) = value; before trying to access that index contents
 
 a.erase(a.begin()+3);     // Remove a[3], shifts elements towards back
 
