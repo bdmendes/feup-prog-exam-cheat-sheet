@@ -1,125 +1,11 @@
+# C++ Exam Cheat Sheet
+
 ```
-This C++ sheet cheat is adapted from https://github.com/mortennobel/cpp-cheatsheet.
+This C++ cheat sheet is adapted from https://github.com/mortennobel/cpp-cheatsheet.
 All statements assume using namespace std (you may still use std::).
 As of C++20 standard.
 PROG 19/20, FEUP
 Scenic Time
-```
-
-
-## Special Keywords
-
-Reserved keywords (may not be used in other contexts):
-
-```cpp
-alignas
-alignof
-and
-and_eq
-asm
-atomic_cancel
-atomic_commit
-atomic_noexcept
-auto
-bitand
-bitor
-bool
-break
-case
-catch
-char
-char8_t
-char16_t
-char32_t
-class
-compl
-concept
-const
-consteval
-constexpr
-constinit
-const_cast
-continue
-co_await
-co_return
-co_yield
-decltype
-default
-delete
-do
-double
-dynamic_cast
-else
-enum
-explicit
-export
-extern
-false
-float
-for
-friend
-goto
-if
-inline
-int
-long
-mutable
-namespace
-new
-noexcept
-not
-not_eq
-nullptr
-operator
-or
-or_eq
-private
-protected
-public
-reflexpr
-register
-reinterpret_cast
-requires
-return
-short
-signed
-sizeof
-static
-static_assert
-static_cast
-struct
-switch
-synchronized
-template
-this
-thread_local
-throw
-true
-try
-typedef
-typeid
-typename
-union
-unsigned
-using
-virtual
-void
-volatile
-wchar_t
-while
-xor
-xor_eq
-```
-
-May be used in function names or objects when not in their special context:
-
-```
-override
-final
-import
-module
-transaction_safe
-transaction_safe_dynamic
 ```
 
 
@@ -208,6 +94,7 @@ int* r = x;                 // r is the memory location of x
                             // you can still do r[index] after this declaration
 
 typedef String char*;       // String s; means char* s;
+                            // same as using String = char*;
 
 const int c = 3;            // Constants must be initialized, cannot assign to (read-only)
 constexpr int = d;          // Same but d must be known at compile time (e.g. d cannot be a parameter)
@@ -230,6 +117,67 @@ Also be aware of the objects lifetimes and memory features:
 int x;                      // Declare x in the stack. It's automatically popped at end of scope
 static int x;               // Global lifetime even if local scope; cannot be used outside with extern
 extern int x;               // Compiler is able to access x declared in other translation units
+```
+
+
+## Expressions
+
+```cpp
+T::X                        // Name X defined in class T
+N::X                        // Name X defined in namespace N
+::X                         // Global name X
+
+t.x                         // Member x of struct or class t
+p->x                        // Member x of struct or class or union that p points to
+                            // Dereference to use same syntax as above: (*p).x
+
+a[i]                        // i'th element of array a
+f(x,y)                      // Call to function f with arguments x and y
+T(x,y)                      // Object of class T initialized with x and y
+typeid(x)                   // Returns reference to object of type of x (access name with .name())
+
+sizeof(x)                   // Number of bytes used to represent object x
+sizeof(T)                   // Number of bytes to represent type T
+x++                         // Add 1 to x, evaluates to original x (postfix)
+x--                         // Subtract 1 from x, evaluates to original x (postfix)
+++x                         // Add 1 to x, evaluates to new value (prefix)
+--x                         // Subtract 1 from x, evaluates to new value (prefix)
+~x                          // Bitwise complement of x
+!x                          // true if x is 0, else false (1 or 0 in C)
+&x                          // Address of x
+*p                          // Contents of address p (*&x equals x)
+(T) x                       // Convert x to T (obsolete, use .._cast<T>(x))
+
+x * y                       // Multiply
+x / y                       // Divide (return same type of operands - 3/2 is 1)
+x % y                       // Modulo (result has sign of x, unlike python!)
+
+x + y                       // Add, or \&x[y]
+x - y                       // Subtract, or number of elements from *x to *y
+x << y                      // x shifted y bits to left (x * pow(2, y))
+x >> y                      // x shifted y bits to right (x / pow(2, y))
+
+x < y                       // Less than
+x <= y                      // Less than or equal to
+x > y                       // Greater than
+x >= y                      // Greater than or equal to
+
+x & y                       // Bitwise and (3 & 6 is 2)
+x ^ y                       // Bitwise exclusive or (3 ^ 6 is 5)
+x | y                       // Bitwise or (3 | 6 is 7)
+
+cond1 && cond2              // cond1 and cond2
+                            // if cond1 is false, cond2 is not evaluated
+                            // to force cond2 execution, do cond1 & cond2
+                            
+cond1 || cond2              // cond1 or cond2
+                            // if cond1 is true, cond2 is not evaluated
+                            // to force cond2 execution, do cond1 | cond2
+                            
+x = y                       // Assign y to x, returns new value of x
+x += y                      // x = x + y, also -= *= /= <<= >>= &= |= ^=
+
+x ? y : z                   // y if x, else z (ternary operator)
 ```
 
 
@@ -284,68 +232,6 @@ f() { statements; }      // Function definition (must be global)
 T operator-(T x);        // allows T a; T b = -a;
 T operator++(int);       // postfix ++ or -- (parameter ignored)
 extern "C" {void f();}   // f() was compiled in C
-```
-
-
-## Expressions
-
-```cpp
-T::X                        // Name X defined in class T
-N::X                        // Name X defined in namespace N
-::X                         // Global name X
-
-t.x                         // Member x of struct or class t
-p->x                        // Member x of struct or class or union that p points to
-                            // Dereference to use same syntax as above: (*p).x
-
-a[i]                        // i'th element of array a
-f(x,y)                      // Call to function f with arguments x and y
-T(x,y)                      // Object of class T initialized with x and y
-typeid(x)                   // Returns reference to object of type of x (access name with .name())
-typedef long l;             // same as using l = long;
-
-sizeof(x)                   // Number of bytes used to represent object x
-sizeof(T)                   // Number of bytes to represent type T
-x++                         // Add 1 to x, evaluates to original x (postfix)
-x--                         // Subtract 1 from x, evaluates to original x (postfix)
-++x                         // Add 1 to x, evaluates to new value (prefix)
---x                         // Subtract 1 from x, evaluates to new value (prefix)
-~x                          // Bitwise complement of x
-!x                          // true if x is 0, else false (1 or 0 in C)
-&x                          // Address of x
-*p                          // Contents of address p (*&x equals x)
-(T) x                       // Convert x to T (obsolete, use .._cast<T>(x))
-
-x * y                       // Multiply
-x / y                       // Divide (return same type of operands - 3/2 is 1)
-x % y                       // Modulo (result has sign of x, unlike python!)
-
-x + y                       // Add, or \&x[y]
-x - y                       // Subtract, or number of elements from *x to *y
-x << y                      // x shifted y bits to left (x * pow(2, y))
-x >> y                      // x shifted y bits to right (x / pow(2, y))
-
-x < y                       // Less than
-x <= y                      // Less than or equal to
-x > y                       // Greater than
-x >= y                      // Greater than or equal to
-
-x & y                       // Bitwise and (3 & 6 is 2)
-x ^ y                       // Bitwise exclusive or (3 ^ 6 is 5)
-x | y                       // Bitwise or (3 | 6 is 7)
-
-cond1 && cond2              // cond1 and cond2
-                            // if cond1 is false, cond2 is not evaluated
-                            // to force cond2 execution, do cond1 & cond2
-                            
-cond1 || cond2              // cond1 or cond2
-                            // if cond1 is true, cond2 is not evaluated
-                            // to force cond2 execution, do cond1 | cond2
-                            
-x = y                       // Assign y to x, returns new value of x
-x += y                      // x = x + y, also -= *= /= <<= >>= &= |= ^=
-
-x ? y : z                   // y if x, else z (ternary operator)
 ```
 
 
@@ -442,6 +328,9 @@ public:                     // Accessible to all
     T operator++(int);      // t++ means t.operator++(int)
                             // int is a dummy parameter meaning postfix operator
 
+    // You cannot overload << and >> for streams inside the class definition
+    // Check `iostream` for how to do this via a function
+
     T(): x(1) {}            // Constructor with member initialization list
                             // Class attributes are initialized before the body of the constructor
                             // So if instead of using lists you did T() {x=1;}
@@ -494,9 +383,9 @@ void T::f() {               // Code for member function f of class T
 int T::y = 2;               // Initialization of static member (required)
 T::l();                     // Call to static member
 
-T t;                        // Create object t implicit call constructor
-                            // Same as T t = T() -> implicit conversion
-                            // To cancel this conversion use explicit in the constructor
+T t = 3;                    // Create object t implicit call constructor
+                            // Same as T t = T(3) -> implicit conversion
+                            // To cancel this conversion use explicit before the constructor
 
 t.f();                      // Call method f on object t
 ```
@@ -517,14 +406,12 @@ bool operator==(const Date& d1, const Date& d2){
 
 Mind the acccess between base and child class members:
 
-```
-INHERITANCE                      BASE CLASS
-                      public     protected     private
+|Inheritance form | Public in base     | Protected in base | Private in base |
+|-----------------|--------------------|--------------------|-----------------|
+|public           | public in child    | protected in child | -               |
+|protected        | protected in child | protected in child | -               |
+|private          | private in child   | private in child   | -               |
 
-public                public     protected     -
-protected             protected  protected     -
-private               private    private       - 
-```
 
 Create a child class according to your needs:
 
@@ -539,7 +426,7 @@ struct T {                  // Equivalent to: class T { public:
                             // Doing this T becomes an abstract class that cannot be instantiated!
 };
 
-class U: public T {         // Derived class U inherits all members of base T
+class U: public T {         // public is the inheritance form
   public:
   U(): T();                 // Base class constructors are not inherited; use delegation like this
   void g(int x) override;   // Explicitly override method g (do not use override in the definition)
@@ -575,8 +462,6 @@ private:
 FeupPerson p("Compact");
 Student s("Elegant", 2019);
 
-p = s; // possible but data is sliced away - slicing problem (s=p is illegal)
-
 set<FeupPerson*> mySet; // Polymorfic since FeupPerson might be a Student as well
                         // FeupPersons are tested for equality via memory location
                         // Go to `set` for more info
@@ -592,6 +477,8 @@ for (const auto& p: mySet){
               // the correct version of the member function (returning 0 or _id) is called
               // this is because of the virtual keyword
 }
+
+p = s; // possible but data is sliced away - slicing problem (s=p is illegal)
 ```
 
 
@@ -653,66 +540,26 @@ catch (...) { doSomething(); }    // if a throws something else, jump here
 ```
 
 
-## `iostream.h`, `iostream` (replaces `stdio.h`; inherits from ios)
+## `string` - variable sized character array (random iteration)
 
 ```cpp
-#include <iostream>         // Include iostream (std namespace)
+#include <string>         // Include string (std namespace)
 
-cin >> x >> y;              // Read words x and y from stdin (set fail flags if types mismatch)
-                            // With strings, extract operator stops at whitespaces (consuming them)
-                            // final '\n' (enter) is not consumed, use cin.ignore() later
-                            
-if (cin)                    // Good state (same as !cin.fail() && !cin.eof())
-if (!cin) cin.clear();      // Set error flags to 0
-cin.ignore(nChars,Delim);   // Ignore nChars characters or until delimiter found
-                            // If a fail occured because of type mismatch, there are chars in the buffer
-                            // In that case you must ignore after clearing to allow new input
-
-cout << "x=" << 3 << endl;  // Write line to stdout (endl is same as cout << '\n' << flush)
-cerr << x << y << flush;    // Write to stderr and flush
-c = cin.get();              // c = getchar();
-cin.get(c);                 // Read char, store in c, consume it
-cin.peek(c);                // Read char, store in c, do not consume it (still asks if buffer is empty)
-cin.getline(s, n, '\n');    // Read line into char s[n] to '\n' (default)
+string s1, s2="hello";    // Create strings
+string repeated('c',4):   // Same as string("cccc");
+s1.size();                // Number of characters ('\n' is not counted)
+s1 += " world";           // Concatenation (only with other strings!)
+int n = stoi("127");      // Converts string to integer
+s1 == "hello world"       // Comparison, also <, >, !=, etc.
+s1[0];                    // 'h'; use s1.at(0) to be able to handle out of bounds exceptions
+s1.substr(m, n);          // Substring of size n starting at s1[m]
+s1.substr(m);             // Substring from s1[m] until end of s1
+s1.c_str();               // Convert to const char*, restricted lifetime
+s1 = to_string(12.05);    // Converts number to string
+getline(cin, s);          // Read line ending in '\n'
+s1.find("hello");         // Pointer to first char of found substring, if not found string::npos
 ```
 
-Any function that returns a stream must use references.
-To overload operators for streams:
-
-```cpp
-istream& operator>>(istream& i, T& x) {i >> ...; x=...; return i;}
-ostream& operator<<(ostream& o, const T& x) {return o << ...;} // << operator should not modify variable
-```
-
-
-## `fstream.h`, `fstream` (file I/O works like `cin`, `cout`)
-
-```cpp
-#include <fstream>          // Include filestream (std namespace)
-
-ifstream f1("filename");    // Open text file for reading
-if (f1)                     // Test if open and input available
-    f1 >> x;                // Read object from file 
-f1.get(c);                  // Read char or line
-while (getline(inputStream, strng)) outputStream << strng;  // Read file line by line, output to stream
-
-ofstream f2("filename");    // Open file for writing
-if (f2) f2 << x;            // Write to file
-```
-
-For random access files be aware of stream pointers:
-
-```cpp
-fstream handle("filename",ios::binary); // open in binary mode to access char by char
-
-handle.tellg(); // returns pointer to current location
-handle.seekg(place); // tries to put current reading position at place
-
-handle.tellp(); // returns pointer to current location
-handle.seekp(place); // tries to put current writing position at place
-
-if (handle.fail()) handle.clear(); // if place is out of file bounds, clear error flag
-```
 
 ## `stringstream` (most methods are inherited from ios; allows input and output)
 
@@ -749,25 +596,37 @@ cout << finalNoSpaces;   // print "hidude"
 ```
 
 
-## `string` - variable sized character array
+## `iostream.h`, `iostream` (replaces `stdio.h`; inherits from ios)
 
 ```cpp
-#include <string>         // Include string (std namespace)
+#include <iostream>         // Include iostream (std namespace)
 
-string s1, s2="hello";    // Create strings
-string repeated('c',4):   // Same as string("cccc");
-s1.size();                // Number of characters ('\n' is not counted)
-s1 += " world";           // Concatenation
-s1 += stoi(127);          // Concatenation 
-s1 == "hello world"       // Comparison, also <, >, !=, etc.
-s1[0];                    // 'h'; use s1.at(0) to be able to handle out of bounds exceptions
-s1.substr(m, n);          // Substring of size n starting at s1[m]
-s1.substr(m);             // Substring from s1[m] until end of s1
-s1.c_str();               // Convert to const char*, restricted lifetime
-s1 = to_string(12.05);    // Converts number to string
-getline(cin, s);          // Read line ending in '\n'
-s1.find("hello");         // Pointer to first char of found substring, if not found string::npos
+cin >> x >> y;              // Read words x and y from stdin (set fail flags if types mismatch)
+                            // With strings, extract operator stops at whitespaces (consuming them)
+                            // final '\n' (enter) is not consumed, use cin.ignore() later
+                            
+if (cin)                    // Good state (same as !cin.fail() && !cin.eof())
+if (!cin) cin.clear();      // Set error flags to 0
+cin.ignore(nChars,Delim);   // Ignore nChars characters or until delimiter found
+                            // If a fail occured because of type mismatch, there are chars in the buffer
+                            // In that case you must ignore after clearing to allow new input
+
+cout << "x=" << 3 << endl;  // Write line to stdout (endl is same as cout << '\n' << flush)
+cerr << x << y << flush;    // Write to stderr and flush
+c = cin.get();              // c = getchar();
+cin.get(c);                 // Read char, store in c, consume it
+cin.peek(c);                // Read char, store in c, do not consume it (still asks if buffer is empty)
+cin.getline(s, n, '\n');    // Read line into char s[n] to '\n' (default)
 ```
+
+Any function that returns a stream must use references.
+To overload operators for streams:
+
+```cpp
+istream& operator>>(istream& i, T& x) {i >> ...; x=...; return i;}
+ostream& operator<<(ostream& o, const T& x) {return o << ...;} // << operator should not modify variable
+```
+
 
 ## `iomanip` (output manipulation)
 
@@ -777,6 +636,37 @@ cout << setfill('0') << setw(2) << right << hour << endl;
                                   // or left (center does not exist)
                                   // instead of cout, you may use stringstream also
 ```
+
+
+## `fstream.h`, `fstream` (file I/O works like `cin`, `cout`)
+
+```cpp
+#include <fstream>          // Include filestream (std namespace)
+
+ifstream f1("filename");    // Open text file for reading
+if (f1)                     // Test if open and input available
+    f1 >> x;                // Read object from file 
+f1.get(c);                  // Read char or line
+while (getline(inputStream, strng)) outputStream << strng;  // Read file line by line, output to stream
+
+ofstream f2("filename");    // Open file for writing
+if (f2) f2 << x;            // Write to file
+```
+
+For random access files be aware of stream pointers:
+
+```cpp
+fstream handle("filename",ios::binary); // open in binary mode to access char by char
+
+handle.tellg(); // returns pointer to current location
+handle.seekg(place); // tries to put current reading position at place
+
+handle.tellp(); // returns pointer to current location
+handle.seekp(place); // tries to put current writing position at place
+
+if (handle.fail()) handle.clear(); // if place is out of file bounds, clear error flag
+```
+
 
 ## `vector` - dynamic array (rapid insertions/deletions on back; random iteration)
 
@@ -952,7 +842,7 @@ auto from = high_resolution_clock::now();
 
 auto to = high_resolution_clock::now();
 
-using ms = duration<float, milliseconds::period>; // same as typedef duration<float, milliseconds::period> ms;
+using ms = duration<float, milliseconds::period>; // typedef duration<float, milliseconds::period> ms;
 
 cout << duration_cast<ms>(to - from).count() << "ms";
 ```
@@ -997,29 +887,29 @@ delete[] intMatrix;
 ```
 
 
-## `ctype.h` - some C Standard Library predicates
+## `ctype.h` - some C Standard Library predicates (library already included in C++)
 
 Some predicates:
 
 ```cpp
-isalpha(c); // Used to check if the character is an alphabet or not.
-isdigit(c); // Used to check if the character is a digit or not.
-isalnum(c); // Used to check if the character is alphanumeric or not.
-isupper(c); // Used to check if the character is in uppercase or not
-islower(c); // Used to check if the character is in lowercase or not.
-iscntrl(c); // Used to check if the character is a control character or not.
-isgraph(c); // Used to check if the character is a graphic character or not.
-isprint(c); // Used to check if the character is a printable character or not.
-ispunct(c); // Used to check if the character is a punctuation mark or not.
-isspace(c); // Used to check if the character is a white-space character or not.
+isalpha(c);  // Used to check if the character is an alphabet or not.
+isdigit(c);  // Used to check if the character is a digit or not.
+isalnum(c);  // Used to check if the character is alphanumeric or not.
+isupper(c);  // Used to check if the character is in uppercase or not
+islower(c);  // Used to check if the character is in lowercase or not.
+iscntrl(c);  // Used to check if the character is a control character or not.
+isgraph(c);  // Used to check if the character is a graphic character or not.
+isprint(c);  // Used to check if the character is a printable character or not.
+ispunct(c);  // Used to check if the character is a punctuation mark or not.
+isspace(c);  // Used to check if the character is a white-space character or not.
 isxdigit(c); // Used to check if the character is hexadecimal or not.
 ```
 
 And to manipulate characters:
 
 ```cpp
-toupper(c); // Used to convert the character into uppercase.
-tolower(c); // Used to convert the character into lowercase.
+toupper(c);  // Used to convert the character into uppercase.
+tolower(c);  // Used to convert the character into lowercase.
 ```
 
 
@@ -1027,6 +917,7 @@ tolower(c); // Used to convert the character into lowercase.
 
 ```cpp
 #include <cmath>            // Include cmath (std namespace)
+
 sin(x); cos(x); tan(x);     // Trig functions, x (double) is in radians
 asin(x); acos(x); atan(x);  // Inverses
 atan2(y, x);                // atan(y/x)
@@ -1040,11 +931,128 @@ fabs(x); fmod(x, y);        // Absolute value, x mod y
 
 ## `assert.h`, `cassert` - debugging aid
 
+The definition of the macro assert depends on another macro, NDEBUG, which is not defined by the standard library. 
+
 ```cpp
 #include <cassert>        // Include iostream (std namespace)
 
-// You can use a macro to quickly enable or disable assertion checks
-#ifdef NDEBUG
+#define NDEBUG            // quickly disable all assertions by commenting this line
+
 assert(e);                // if e is false, print message and abort
-#endif
+```
+
+
+## Special Keywords
+
+Reserved keywords (may not be used in other contexts):
+
+```cpp
+alignas
+alignof
+and
+and_eq
+asm
+atomic_cancel
+atomic_commit
+atomic_noexcept
+auto
+bitand
+bitor
+bool
+break
+case
+catch
+char
+char8_t
+char16_t
+char32_t
+class
+compl
+concept
+const
+consteval
+constexpr
+constinit
+const_cast
+continue
+co_await
+co_return
+co_yield
+decltype
+default
+delete
+do
+double
+dynamic_cast
+else
+enum
+explicit
+export
+extern
+false
+float
+for
+friend
+goto
+if
+inline
+int
+long
+mutable
+namespace
+new
+noexcept
+not
+not_eq
+nullptr
+operator
+or
+or_eq
+private
+protected
+public
+reflexpr
+register
+reinterpret_cast
+requires
+return
+short
+signed
+sizeof
+static
+static_assert
+static_cast
+struct
+switch
+synchronized
+template
+this
+thread_local
+throw
+true
+try
+typedef
+typeid
+typename
+union
+unsigned
+using
+virtual
+void
+volatile
+wchar_t
+while
+xor
+xor_eq
+```
+
+May be used in function names or objects when not in their special context:
+
+```
+override
+final
+import
+module
+transaction_safe
+transaction_safe_dynamic
 ```
