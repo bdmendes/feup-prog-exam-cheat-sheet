@@ -778,7 +778,7 @@ cout << setfill('0') << setw(2) << right << hour << endl;
                                   // instead of cout, you may use stringstream also
 ```
 
-## `vector` - dynamic array (rapid insertions/deletions on back; direct access)
+## `vector` - dynamic array (rapid insertions/deletions on back; random iteration)
 
 ```cpp
 #include <vector>         // Include vector (std namespace)
@@ -818,7 +818,7 @@ vector<T> c(n, x);        // c[0]..c[n-1] init to x
 ```
 
 
-## `deque` - stack queue (rapid insertions/deletions on front and back; direct acess)
+## `deque` - stack queue (rapid insertions/deletions on front and back; random iteration)
 
 `deque<T>` is like `vector<T>`, but also supports:
 
@@ -831,7 +831,7 @@ a.pop_front();            // Removes a[0], shifts toward front
 ```
 
 
-## `list` - doubly linked list (rapid insertion/deletion everywhere, no direct access to elements)
+## `list` - doubly linked list (rapid insertion/deletion everywhere, bidirection iteration)
 
 You cannot access specified index without accessing all on the left/right.
 Therefore you can't do l[3] and neither l.begin()+3; only it++ and it--.
@@ -848,7 +848,7 @@ l.sort();      // only for lists, use std::sort for vector or deque
 ```
 
 
-## `array` - statically sized array (lightweight wrapper around C array)
+## `array` - statically sized array (lightweight wrapper around C array; random iteration)
 
 ```cpp
 #include <array> (std namespace)
@@ -871,7 +871,7 @@ a.second;                        // 3
 ```
 
 
-## `map` - ordered associative container
+## `map` - ordered associative container (bidirection iteration)
 
 If order is not important, use `unordered_map` instead.
 
@@ -888,7 +888,7 @@ a.empty()                 // Same as !a.size()
 ```
 
 
-## `set` - store unique elements ordered
+## `set` - store unique elements ordered (bidirectional iteration)
 
 For insertion to work, the operator < must be defined between two objects of used type.
 Elements are considered duplicates (therefore not added) when !(a < b) && !(b < a).
@@ -913,12 +913,6 @@ cout << s.size();         // Number of elements in set
 ```
 
 
-## `unordered_set` - store unique elements without specific order
-
-Same as above, but out of order, thus faster.
-Instead of defining the < operator you must define == AND tell the unordered_set how to hash the class Type.
-
-
 ## `algorithm` - collection of 60 algorithms on sequences with iterators
 
 ```cpp
@@ -927,7 +921,7 @@ Instead of defining the < operator you must define == AND tell the unordered_set
 min(x, y); max(x, y);                  // Smaller/larger of x, y (any type defining <)
 swap(x, y);                            // Exchange values of variables x and y
 sort(a, a+n);                          // Sort array a[0]..a[n-1] by <
-sort(a.begin(), a.end());              // Sort vector or deque
+sort(a.begin(), a.end());              // Sort containers that support random iteration
 sort(a.begin(), a.end(), f);           // Sort array or deque using f as comp (change order if f)
                                        // f should be like bool f(T a, T b){return a<b;}
 
