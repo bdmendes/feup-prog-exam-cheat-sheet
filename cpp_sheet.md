@@ -895,14 +895,14 @@ Elements are considered duplicates (therefore not added) when !(a < b) && !(b < 
 If order is not important, use `unordered_set` instead.
 
 ```cpp
-#include <set>            // Include set (std namespace)
+#include <set>               // Include set (std namespace)
 
 set<Player> s;               // Empty set of Player's
-                             // For later insertion, you must define the operator== for Player
+                             // For later insertion, you must define the operator < for Player
                              
 set<int> s(v.begin(), v.end());   // Construct with iterators
 
-set<Player*,decltype(comp)*> players(comp); // You cannot define operator== for two pointers
+set<Player*,decltype(comp)*> players(comp); // You cannot define operator < (neither ==) for two pointers
                                             // To have your own implementation, pass comp as help function
 
 s.insert(123);            // Add element to set
