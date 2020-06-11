@@ -427,7 +427,7 @@ struct T {                  // Equivalent to: class T { public:
 };
 
 class U: public T {         // public is the inheritance form
-  public:
+public:
   U(): T();                 // Base class constructors are not inherited; use delegation like this
   void g(int x) override;   // Explicitly override method g (do not use override in the definition)
   void g(int x);            // Same as above but compiler does not check if g is virtual in T
@@ -488,17 +488,18 @@ Like overloading, this kind of polymorphism is compile time defined.
 "Overload" a class/function/method for all types:
 
 ```cpp
-template <class T>         // Same as template <typename T>
+template <class T>  // Same as template <typename T>
 T f(T t);
 
 template <class T>
 class X {
-  X(T t); };
+  X(T t);
+};
 
 template <class T>
 X<T>::X(T t) {}
 
-template <class T, unsigned long n=0>     // Template with default parameters
+template <class T, unsigned long n=0>  // Template with default parameters
 T f(array<int,n> myArray);
 ```
 
@@ -634,7 +635,7 @@ ostream& operator<<(ostream& o, const T& x) {return o << ...;} // << operator sh
 // Suppose you have an hour between 0 and 24. To always output in the format HH you can do:
 cout << setfill('0') << setw(2) << right << hour << endl;
                                   // or left (center does not exist)
-                                  // instead of cout, you may use stringstream also
+                                  // instead of cout, you may also use stringstream
 ```
 
 
@@ -647,7 +648,7 @@ ifstream f1("filename");    // Open text file for reading
 if (f1)                     // Test if open and input available
     f1 >> x;                // Read object from file 
 f1.get(c);                  // Read char or line
-while (getline(inputStream, strng)) outputStream << strng;  // Read file line by line, output to stream
+while (getline(inputStream, strng)) outputStream << strng;  // Read file line by line
 
 ofstream f2("filename");    // Open file for writing
 if (f2) f2 << x;            // Write to file
@@ -724,17 +725,19 @@ a.pop_front();            // Removes a[0], shifts toward front
 ## `list` - doubly linked list (rapid insertion/deletion everywhere, bidirection iteration)
 
 You cannot access specified index without accessing all on the left/right.
-Therefore you can't do l[3] and neither l.begin()+3; only it++ and it--.
+Therefore you can't do l.at(3) and neither l.begin()+3; only it++ and it--.
+The forward iteration version of this container is `forward_list`.
 
 ```cpp
 #include <list> (std namespace)
 
 list<int> l = {1,2,8,9,12,2};
 auto it = find(l.begin(),l.end(),9);
-l.insert(it,23);
-l.remove(8);   // remove all elements == 8; reduce container size
-l.remove_if(f) // same as above but use f as comp
-l.sort();      // only for lists, use std::sort for vector or deque
+l.insert(it,23); //insert 23 at position where 9 is; shift towards right
+
+l.remove(8);     // remove all elements == 8; reduce container size
+l.remove_if(f);  // same as above but use f as comp
+l.sort();        // only for lists, use std::sort for random iteration containers
 ```
 
 
