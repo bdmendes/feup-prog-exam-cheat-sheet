@@ -726,7 +726,7 @@ a.pop_front();            // Removes a[0], shifts toward front
 ```
 
 
-## `list` - doubly linked list (rapid insertion/deletion everywhere, bidirection iteration)
+## `list` - doubly linked list (rapid insertion/deletion everywhere, bidirectional iteration)
 
 You cannot access specified index without accessing all on the left/right.
 Therefore you can't do l.at(3) and neither l.begin()+3; only it++ and it--.
@@ -768,7 +768,7 @@ a.second;                        // 3
 ```
 
 
-## `map` - ordered associative container (bidirection iteration)
+## `map` - ordered associative container (bidirectional iteration)
 
 If order is not important, use `unordered_map` instead.
 
