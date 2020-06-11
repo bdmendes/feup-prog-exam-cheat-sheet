@@ -233,7 +233,7 @@ else c;                     // if not x and not y (optional)
 
 while (cond) a;             // Repeat while cond is true (if cond is int -> cond!=0)
 
-for (initial; cond; inc) a; // Equivalent to: x; while(y) {a; z;}
+for (initial; cond; inc) a; // Equivalent to: initial; while(cond) {cond; inc;}
 
 for (t elem : container) a; // Range-based for loop - do a; for each COPY of element in container
 
