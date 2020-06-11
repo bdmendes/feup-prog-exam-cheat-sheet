@@ -1,6 +1,6 @@
 ```
 This C++ sheet cheat is adapted from https://github.com/mortennobel/cpp-cheatsheet.
-All statements assume using namespace std.
+All statements assume using namespace std (you may still use std::).
 As of C++20 standard.
 PROG 19/20, FEUP
 Scenic Time
@@ -154,7 +154,7 @@ nullptr                     // Pointer type with the address of 0
 
 ## Types; casts; declarations
 
-Know the standard types:
+Know the standard C types:
 
 ```cpp
 int8_t,uint8_t,int16_t,     // char, unsigned char, short,
@@ -192,8 +192,7 @@ int a[]={0,1,2};            // Initialized array (or a[3]={0,1,2}; )
                             // Always pass size as parameter
 
 int a[][2]={{1,2},{4,5}};   // Array of array of ints (only first dimension can be deduced!)
-char s[]="hello";           // String (6 elements including '\0'); same as char* s = "hello"
-std::string s = "Hello";    // same as std::string s("Hello"); calls default constructor
+char s[]="hello";           // C String (6 elements including '\0'); same as char* s = "hello"
 
 int *p,*a;                  // p and a are pointers to ints
                             // if you did int* p,a; a would not be a pointer!
@@ -203,7 +202,8 @@ void* p = nullptr;          // Address of untyped memory (nullptr is 0)
 int& r = x;                 // r is a reference to (alias of) int x
 
 int* r = x;                 // r is the memory location of x
-                            // Dereference later to get object: int myInt = *r;
+
+                            // if x is an array of allocated memory (unallocated: undefined behaviour)
                             // do r++ to jump sizeof(int) bytes in the memory (access next index)
                             // you can still do r[index] after this declaration
 
@@ -354,14 +354,14 @@ x ? y : z                   // y if x, else z (ternary operator)
 [] is the list of acessible variables from the outer scope. Pass & to allow access to all.
 
 ```cpp
-bool isMove = [](const std::string& str){
+bool isMove = [](const string& str){
     return str.size() == 2 && isupper(str.at(0)) && islower(str.at(1));
 };
 
-std::string candidate1("Ab"), candidate2("3A");
+string candidate1("Ab"), candidate2("3A");
 
 // Is one of them a valid move?
-std::cout << isMove(candidate1) || isMove(candidate2); // print 1
+cout << isMove(candidate1) || isMove(candidate2); // print 1
 ```
 
 
@@ -408,13 +408,13 @@ enum weekend day = SAT;       // day is a variable of type weekend
 int anotherDay = 6;
 switch (anotherDay){
    case (SAT):
-       std::cout << "Today is Saturday\n"; // this gets executed
+       cout << "Today is Saturday\n"; // this gets executed
        break;
    case (SUN):
-       std::cout << "Sunday it is\n";
+       cout << "Sunday it is\n";
        break;
    default:
-       std::cout << "Time to work...\n";
+       cout << "Time to work...\n";
 }
 ```
 
@@ -443,8 +443,17 @@ public:                     // Accessible to all
                             // int is a dummy parameter meaning postfix operator
 
     T(): x(1) {}            // Constructor with member initialization list
-                            // The compiler creates a default constructor for coincident class types
-                            // The default one may raise issues such as unwanted aliasing
+                            // Class attributes are initialized before the body of the constructor
+                            // So if instead of using lists you did T() {x=1;}
+                            // x would be initialized with nothing and then assigned - what a waste!
+    
+                            // A default constructor (no parameters) is generated automatically
+                            // Unless you define other constructors yourself
+                            // If in that case you still want the compiler generated constructor
+                            // Do explicitly: T() = default;
+                            
+                            // The compiler also generates T(T otherWithSameType) automatically
+                            // This may raise issues such as unwanted aliasing
                             // eg. there are pointers as attributes of the class
     
     T(const T& t): x(t.x) {}// Copy constructor (still a constructor... initialize T attributes)
@@ -484,7 +493,11 @@ void T::f() {               // Code for member function f of class T
     
 int T::y = 2;               // Initialization of static member (required)
 T::l();                     // Call to static member
-T t;                        // Create object t implicit call constructor, same as T t = T();
+
+T t;                        // Create object t implicit call constructor
+                            // Same as T t = T() -> implicit conversion
+                            // To cancel this conversion use explicit in the constructor
+
 t.f();                      // Call method f on object t
 ```
 
@@ -496,9 +509,7 @@ bool operator==(const Date& d1, const Date& d2){
     && d1.getMonth() == d2.getMonth()
     && d1.getDay() == d2.getDay();
 }
-
-// Same as:
-// bool Date::operator==(const Date& other) const {conditions;};
+// Same as bool Date::operator==(const Date& other) const {conditions;};
 ```
 
 
@@ -566,22 +577,21 @@ Student s("Elegant", 2019);
 
 p = s; // possible but data is sliced away - slicing problem (s=p is illegal)
 
-std::unordered_set<FeupPerson*> mySet; // Polymorfic since FeupPerson might be a Student as well
+set<FeupPerson*> mySet; // Polymorfic since FeupPerson might be a Student as well
+                        // FeupPersons are tested for equality via memory location
+                        // Go to `set` for more info
+
 mySet.insert(&p);
 mySet.insert(&s); // Student* implicitly becomes FeupPerson*
-int plusTwo= [](int a){
-    return a+2;
-};
-for (const auto& p: mySet){
 
+for (const auto& p: mySet){
     if (dynamic_cast<Student*>(p) != nullptr){ // if conversion to Student is successful
-         std::cout << "This is a student! \n";
+         cout << "This is a student! \n";
     }
-    std::cout << "id: " << p->getId << endl;
+    cout << "id: " << p->getId() << endl;
               // the correct version of the member function (returning 0 or _id) is called
               // this is because of the virtual keyword
 }
-
 ```
 
 
@@ -602,7 +612,7 @@ template <class T>
 X<T>::X(T t) {}
 
 template <class T, unsigned long n=0>     // Template with default parameters
-T f(std::array<int,n> myArray);
+T f(array<int,n> myArray);
 ```
 
 Then use them for your specific needs:
@@ -647,9 +657,16 @@ catch (...) { doSomething(); }    // if a throws something else, jump here
 
 ```cpp
 #include <iostream>         // Include iostream (std namespace)
+
 cin >> x >> y;              // Read words x and y from stdin (set fail flags if types mismatch)
                             // With strings, extract operator stops at whitespaces (consuming them)
                             // final '\n' (enter) is not consumed, use cin.ignore() later
+                            
+if (cin)                    // Good state (same as !cin.fail() && !cin.eof())
+if (!cin) cin.clear();      // Set error flags to 0
+cin.ignore(nChars,Delim);   // Ignore nChars characters or until delimiter found
+                            // If a fail occured because of type mismatch, there are chars in the buffer
+                            // In that case you must ignore after clearing to allow new input
 
 cout << "x=" << 3 << endl;  // Write line to stdout (endl is same as cout << '\n' << flush)
 cerr << x << y << flush;    // Write to stderr and flush
@@ -657,10 +674,6 @@ c = cin.get();              // c = getchar();
 cin.get(c);                 // Read char, store in c, consume it
 cin.peek(c);                // Read char, store in c, do not consume it (still asks if buffer is empty)
 cin.getline(s, n, '\n');    // Read line into char s[n] to '\n' (default)
-
-if (cin)                    // Good state (not EOF and not fail)
-if (!cin) cin.clear();      // Set error flags to 0 (use cin.ignore() later)
-cin.ignore(nChars,Delim);   // Ignore nChars characters or until delimiter found
 ```
 
 Any function that returns a stream must use references.
@@ -668,7 +681,7 @@ To overload operators for streams:
 
 ```cpp
 istream& operator>>(istream& i, T& x) {i >> ...; x=...; return i;}
-ostream& operator<<(ostream& o, const T& x) {return o << ...;}
+ostream& operator<<(ostream& o, const T& x) {return o << ...;} // << operator should not modify variable
 ```
 
 
@@ -681,7 +694,7 @@ ifstream f1("filename");    // Open text file for reading
 if (f1)                     // Test if open and input available
     f1 >> x;                // Read object from file 
 f1.get(c);                  // Read char or line
-while (std::getline(inputStream, strng)) outputStream << strng;     // Read file line by line, output to stream
+while (getline(inputStream, strng)) outputStream << strng;  // Read file line by line, output to stream
 
 ofstream f2("filename");    // Open file for writing
 if (f2) f2 << x;            // Write to file
@@ -690,7 +703,6 @@ if (f2) f2 << x;            // Write to file
 For random access files be aware of stream pointers:
 
 ```cpp
-
 fstream handle("filename",ios::binary); // open in binary mode to access char by char
 
 handle.tellg(); // returns pointer to current location
@@ -704,8 +716,6 @@ if (handle.fail()) handle.clear(); // if place is out of file bounds, clear erro
 
 ## `stringstream` (most methods are inherited from ios; allows input and output)
 
-For specific input/output only purposes, use `istringstream` and `ostringstream` instead.
-
 ```cpp
 #include <sstream> (std namespace)
 
@@ -714,16 +724,28 @@ ss.str();                       // Return "Hello World"
 ss << 127;                      // operator << is overloaded for number types
 while (ss >> a) temp+=a;        // extract all ss words; all spaces are stripped (>> operator)
 while (getline(ss,a,'\n')) temp+=a;  // read lines; spaces are kept; '\n' is consumed
-ss >> hour >> comma >> minute;  // If "12:27" is on ss, int hour becomes 12 and int minute 27
-                                // comma must be a char or rest of the string would be consumed
+ss >> hour >> sep >> minute;    // If "12:27" is on ss, int hour becomes 12 and int minute 27
+                                // sep must be a char or rest of the string would be consumed
 ```
 
-Reaching the end of ss extraction causes eof. To reuse to output:
+Reaching the end of ss extraction (>>) causes eof. To reuse:
 
 ```cpp
 ss.str("");               // Different from ss.str(); this clears current contents
 ss.clear();               // Clear error flags
 ss << "Now I say hi"      // Reusable again
+```
+
+However for best practice use `istringstream` and `ostringstream` for your needs:
+
+```cpp
+string temp, finalNoSpaces;
+ostringstream oss;
+oss << "      hi    " << "   dude";
+istringstream iss(oss.str());
+
+while(ss >> temp) finalNoSpaces += temp;
+cout << finalNoSpaces;   // print "hidude"
 ```
 
 
@@ -736,6 +758,7 @@ string s1, s2="hello";    // Create strings
 string repeated('c',4):   // Same as string("cccc");
 s1.size();                // Number of characters ('\n' is not counted)
 s1 += " world";           // Concatenation
+s1 += stoi(127);          // Concatenation 
 s1 == "hello world"       // Comparison, also <, >, !=, etc.
 s1[0];                    // 'h'; use s1.at(0) to be able to handle out of bounds exceptions
 s1.substr(m, n);          // Substring of size n starting at s1[m]
@@ -750,8 +773,8 @@ s1.find("hello");         // Pointer to first char of found substring, if not fo
 
 ```cpp
 // Suppose you have an hour between 0 and 24. To always output in the format HH you can do:
-cout << setfill('0') << setw(2) << std::right << hour << endl;
-                                  // or std::left (center does not exist)
+cout << setfill('0') << setw(2) << right << hour << endl;
+                                  // or left (center does not exist)
                                   // instead of cout, you may use stringstream also
 ```
 
@@ -778,7 +801,7 @@ a.resize(15);             // Make vector size 15
 
 a.erase(a.begin()+3);     // Remove a[3], shifts elements towards back
 
-a.erase(std::remove_if(a.begin(), a.end(), isOdd), a.end());
+a.erase(remove_if(a.begin(), a.end(), isOdd), a.end());
                           // Erase-remove idiom (faster than erasing one-by-one in a for loop)
                           // Remove_if points to the element after all non-removed elements
                           // isOdd is the comp function, should return bool and receive two objects
@@ -873,14 +896,17 @@ Elements are considered duplicates (therefore not added) when !(a < b) && !(b < 
 ```cpp
 #include <set>            // Include set (std namespace)
 
-set<int> s;               // Empty set of integers
+set<Player> s;               // Empty set of Player's
+                             // For later insertion, you must define the operator== for Player
+                             
 set<int> s(v.begin(), v.end());   // Construct with iterators
-std::set<Player*,decltype(comp)*> players(comp); // Use comp as comparison function
-                                                 // Useful for pointers; alternative for overloading <
+
+set<Player*,decltype(comp)*> players(comp); // You cannot define operator== for two pointers
+                                            // To have your own implementation, pass comp as help function
 
 s.insert(123);            // Add element to set
 
-if (s.find(123) != s.end()) // find is set specific (use std::find for other containers)
+if (s.find(123) != s.end()) // find is set specific (use find for other containers)
 s.erase(123);  // no need to use iterators here (for vectors you did)
 
 cout << s.size();         // Number of elements in set
@@ -890,7 +916,7 @@ cout << s.size();         // Number of elements in set
 ## `unordered_set` - store unique elements without specific order
 
 Same as above, but out of order, thus faster.
-Instead of defining the < operator you must define ==.
+Instead of defining the < operator you must define == AND tell the unordered_set how to hash the class Type.
 
 
 ## `algorithm` - collection of 60 algorithms on sequences with iterators
@@ -923,7 +949,7 @@ remove(a.begin(),a.end(),value);       // Place non-removed elements at the begg
 
 ```cpp
 #include <chrono>
-using namespace std::chrono;
+using namespace chrono;
 
 auto from = high_resolution_clock::now();
 
@@ -941,7 +967,7 @@ cout << duration_cast<ms>(to - from).count() << "ms";
 
 ```cpp
 #include <chrono>
-using namespace std::chrono;
+using namespace chrono;
 
 auto seed =               // Get time since 1 Jan 1970
   system_clock::now().time_since_epoch().count();
