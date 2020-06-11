@@ -152,16 +152,37 @@ nullptr                     // Pointer type with the address of 0
 ```
 
 
-## Declarations
+## Types; casts; declarations
+
+Know the standard types:
+
+```cpp
+int8_t,uint8_t,int16_t,     // char, unsigned char, short,
+uint16_t,int32_t,uint32_t,  // unsigned short, int, unsigned int
+int64_t,uint64_t            // long, unsigned long
+```
+
+The possible conversion mechanisms:
+
+```cpp
+dynamic_cast<T>(x)          // Converts x to a T, checked at run time
+                            // T must be a pointer or reference
+                            // May convert between classes
+                            // Fail in conversion returns nullptr
+                            
+static_cast<T>(x)           // Converts x to a T, for simple data types
+                            // Alerts when possible truncation issues (which C-style casts do not do)
+                            // Does not work with classe types
+                            
+reinterpret_cast<T>(x)      // Interpret bits of x as a T
+const_cast<T>(x)            // Casts away const
+```
+
+Then start storing your data:
 
 ```cpp
 int x;                      // Declare x to be an integer (value undefined)
 int x=255;                  // Declare and initialize x to 255
-short s;                    // Usually 16 or 32 bit integer (int may be either)
-char c='a';                 // Usually 8 bit character
-unsigned char u=255;        // Signed is implicit, use unsigned to expand positive range
-float f; double d;          // Single or double precision real (always signed)
-bool b=true;                // true or false, may also use int (1 or 0)
 int a, b, c;                // Multiple declarations
 
 int a[10];                  // Array of 10 ints (a[0] through a[9])
@@ -174,41 +195,36 @@ int a[][2]={{1,2},{4,5}};   // Array of array of ints (only first dimension can 
 char s[]="hello";           // String (6 elements including '\0'); same as char* s = "hello"
 std::string s = "Hello";    // same as std::string s("Hello"); calls default constructor
 
-int *p,*a;                  // p and a are pointers to ints (* before a is necessary!)
-                            // you can't deduce size of this
+int *p,*a;                  // p and a are pointers to ints
+                            // if you did int* p,a; a would not be a pointer!
 
-char* s="hello";            // s points to first element of array
-void* p=nullptr;            // Address of untyped memory (nullptr is 0)
-int& r=x;                   // r is a reference to (alias of) int x
-int* r=x;                   // r is memory location of x
+char* s = "hello";          // s points to first element of array
+void* p = nullptr;          // Address of untyped memory (nullptr is 0)
+int& r = x;                 // r is a reference to (alias of) int x
+
+int* r = x;                 // r is the memory location of x
                             // Dereference later to get object: int myInt = *r;
-
-enum weekend {SAT,SUN,MON}; // weekend is a type wrapping global integer values: SAT=0, SUN=1, MON=2
-enum weekend {SAT=14,SUN=3};// Explicit representation as int
-enum weekend day = SAT;     // day is a variable of type weekend (e.g may be 14 but not 10)
+                            // do r++ to jump sizeof(int) bytes in the memory (access next index)
+                            // you can still do r[index] after this declaration
 
 typedef String char*;       // String s; means char* s;
 
-const int c=3;              // Constants must be initialized, cannot assign to (read-only)
+const int c = 3;            // Constants must be initialized, cannot assign to (read-only)
 constexpr int = d;          // Same but d must be known at compile time (e.g. d cannot be a parameter)
-
-int8_t,uint8_t,int16_t,
-uint16_t,int32_t,uint32_t,
-int64_t,uint64_t            // Fixed length standard types
 
 auto it = m.begin();        // Auto deduces type of variable (in this case an iterator)
 ```
+
 Always read right to left:
 
 ```cpp
-const int* p=a;             // p is a pointer to a constant int (might point elsewhere)
-int* const p=a;             // p is a constant pointer to an int (a will change if as *p)
+const int* p=a;             // p is a pointer to a int that is constant (might point elsewhere)
+int* const p=a;             // p is a constant pointer to an int (contents might change)
 const int* const p=a;       // Both p and its contents are constant
-const int& cr=x;            // cr is a reference (alias) of int that is constant
+const int& cr=x;            // cr is a reference (alias) of an int that is constant
 ```
 
-
-## Storage Classes
+Also be aware of the objects lifetimes and memory features:
 
 ```cpp
 int x;                      // Declare x in the stack. It's automatically popped at end of scope
@@ -220,7 +236,7 @@ extern int x;               // Compiler is able to access x declared in other tr
 ## Statements
 
 ```cpp
-int x;x=y;                  // Declarations and assignements are statements
+int x; x=y;                 // Declarations and assignements are statements
 ;                           // Empty statement
 
 {                           
@@ -231,7 +247,8 @@ if (x) a;                   // if x is true (not 0), evaluate a
 else if (y) b;              // if not x and y (optional, may be ed)
 else c;                     // if not x and not y (optional)
 
-while (cond) a;             // Repeat while cond is true (if cond is int -> cond!=0)
+while (cond) a;             // Repeat while cond is true
+                            // ints may be evaluated as conditions (0 false; else true)
 
 for (initial; cond; inc) a; // Equivalent to: initial; while(cond) {cond; inc;}
 
@@ -248,28 +265,6 @@ switch (x) {                // x must be integer known at compile time
 break;                      // Jump out of while, do, or for loop, or switch
 continue;                   // Jump to bottom of while, do, or for loop
 return x;                   // Return x from function to caller
-```
-
-
-## Exception handling
-
-```cpp
-#include <stdexcept> // to access STL exception classes
-
-try {
-  doSomething(); // this may throw an exception
-  
-  throw invalid_argument("received negative value");
-                 // you may throw an object yourself (in this case an exception)
-}
-
-catch (exception t) { // if t was thrown, catch it (do not crash program)
-  fixSomething();
-  cout << t.what() << endl; // print error message describing exception
-  throw; // throw t again if you want the program to crash
-}
-
-catch (...) { doSomething(); }    // if a throws something else, jump here
 ```
 
 
@@ -292,33 +287,6 @@ extern "C" {void f();}   // f() was compiled in C
 ```
 
 
-## Lambda functions
-
-[] is the list of acessible variables from the outer scope. Pass & to allow access to all.
-
-```cpp
-int plusTwo= [](int a){
-    return a+2;
-};
-
-int a = 3;
-int b = plusTwo(a); // b = 5;
-```
-
-
-## Main function
-
-The main functions return the error code, 0 meaning all ok and up something went wrong.
-At any time, use exit(intError) to stop the program and return intError in main.
-
-```cpp
-int main()  { statements... }     // main is the starting point of any program
-int main(int argc, char* argv[]) { statements... }
-        //argc -> number of arguments when running the program (default 1 - program name)
-        //argv -> command strings (char**)
-```
-
-
 ## Expressions
 
 ```cpp
@@ -327,24 +295,14 @@ N::X                        // Name X defined in namespace N
 ::X                         // Global name X
 
 t.x                         // Member x of struct or class t
-p-> x                       // Member x of struct or class pointed to by p
+p->x                        // Member x of struct or class or union that p points to
+                            // Dereference to use same syntax as above: (*p).x
+
 a[i]                        // i'th element of array a
 f(x,y)                      // Call to function f with arguments x and y
 T(x,y)                      // Object of class T initialized with x and y
 typeid(x)                   // Returns reference to object of type of x (access name with .name())
 typedef long l;             // same as using l = long;
-
-dynamic_cast<T>(x)          // Converts x to a T, checked at run time
-                            // T must be a pointer or reference
-                            // May convert between classes
-                            // Fail in conversion returns nullptr
-                            
-static_cast<T>(x)           // Converts x to a T, for simple data types
-                            // Alerts when possible truncation issues (which C-style casts do not do)
-                            // Does not work with classe types
-                            
-reinterpret_cast<T>(x)      // Interpret bits of x as a T
-const_cast<T>(x)            // Casts away const
 
 sizeof(x)                   // Number of bytes used to represent object x
 sizeof(T)                   // Number of bytes to represent type T
@@ -360,7 +318,7 @@ x--                         // Subtract 1 from x, evaluates to original x (postf
 
 x * y                       // Multiply
 x / y                       // Divide (return same type of operands - 3/2 is 1)
-x % y                       // Modulo (result has sign of x)
+x % y                       // Modulo (result has sign of x, unlike python!)
 
 x + y                       // Add, or \&x[y]
 x - y                       // Subtract, or number of elements from *x to *y
@@ -375,15 +333,51 @@ x >= y                      // Greater than or equal to
 x & y                       // Bitwise and (3 & 6 is 2)
 x ^ y                       // Bitwise exclusive or (3 ^ 6 is 5)
 x | y                       // Bitwise or (3 | 6 is 7)
-x && y                      // x and then y (evaluates y only if x)
-x || y                      // x or else y (evaluates y only if !x)
+
+cond1 && cond2              // cond1 and cond2
+                            // if cond1 is false, cond2 is not evaluated
+                            // to force cond2 execution, do cond1 & cond2
+                            
+cond1 || cond2              // cond1 or cond2
+                            // if cond1 is true, cond2 is not evaluated
+                            // to force cond2 execution, do cond1 | cond2
+                            
 x = y                       // Assign y to x, returns new value of x
 x += y                      // x = x + y, also -= *= /= <<= >>= &= |= ^=
 
 x ? y : z                   // y if x, else z (ternary operator)
-throw x                     // Throw exception, aborts if not caught
 ```
 
+
+## Lambda functions - quick, disposable actions
+
+[] is the list of acessible variables from the outer scope. Pass & to allow access to all.
+
+```cpp
+bool isMove = [](const std::string& str){
+    return str.size() == 2 && isupper(str.at(0)) && islower(str.at(1));
+};
+
+std::string candidate1("Ab"), candidate2("3A");
+
+// Is one of them a valid move?
+std::cout << isMove(candidate1) || isMove(candidate2); // print 1
+```
+
+
+## Main function
+
+The main functions return the error code, 0 meaning all ok and up something went wrong.
+At any time, use exit(intError) to stop the program and return intError in main.
+
+```cpp
+int main()  { statements... }     // main is the starting point of any program
+
+// One can make main recognize command line arguments:
+int main(int argc, char* argv[]) { statements... }
+        //argc -> number of arguments when running the program (default 1 - program name)
+        //argv -> command strings (char**)
+```
 
 ## Unions
 
@@ -398,6 +392,30 @@ union Numbers
 
 union Numbers n; // if you do union Numbers* n, access by n->x
 n.x = 2; // n.d also gets value 2
+```
+
+
+## Enums
+
+Enums are a bit magical, being like declaring multiple integers that are related. Very useful to make switch readable.
+
+```cpp
+enum weekend {SAT,SUN,MON};   // weekend is a type wrapping global integer values: SAT=0, SUN=1, MON=2
+enum weekend {SAT=6,SUN=7};   // Explicit representation as int
+enum weekend day = SAT;       // day is a variable of type weekend
+                              // must be assigned to its name, not its value
+
+int anotherDay = 6;
+switch (anotherDay){
+   case (SAT):
+       std::cout << "Today is Saturday\n"; // this gets executed
+       break;
+   case (SUN):
+       std::cout << "Sunday it is\n";
+       break;
+   default:
+       std::cout << "Time to work...\n";
+}
 ```
 
 
@@ -424,12 +442,13 @@ public:                     // Accessible to all
     T operator++(int);      // t++ means t.operator++(int)
                             // int is a dummy parameter meaning postfix operator
 
-    T(): x(1) {}            // Constructor with initialization list (avoid allocating x twice!)
-    
-    T(const T& t): x(t.x) {}// Copy constructor (still a constructor... initialize T attributes)
-                            // The compiler creates a default one for coincident class types
+    T(): x(1) {}            // Constructor with member initialization list
+                            // The compiler creates a default constructor for coincident class types
                             // The default one may raise issues such as unwanted aliasing
                             // eg. there are pointers as attributes of the class
+    
+    T(const T& t): x(t.x) {}// Copy constructor (still a constructor... initialize T attributes)
+                            // Again, the compiler might take care of this with side effects
     
     T& operator=(const T& t)
     {x=t.x; return *this; } // Assignment operator
@@ -467,6 +486,19 @@ int T::y = 2;               // Initialization of static member (required)
 T::l();                     // Call to static member
 T t;                        // Create object t implicit call constructor, same as T t = T();
 t.f();                      // Call method f on object t
+```
+
+Note that operators might also be overloaded outside the class, via a function:
+
+```cpp
+bool operator==(const Date& d1, const Date& d2){
+    return d1.getYear() == d2.getYear()
+    && d1.getMonth() == d2.getMonth()
+    && d1.getDay() == d2.getDay();
+}
+
+// Same as:
+// bool Date::operator==(const Date& other) const {conditions;};
 ```
 
 
@@ -537,7 +569,9 @@ p = s; // possible but data is sliced away - slicing problem (s=p is illegal)
 std::unordered_set<FeupPerson*> mySet; // Polymorfic since FeupPerson might be a Student as well
 mySet.insert(&p);
 mySet.insert(&s); // Student* implicitly becomes FeupPerson*
-
+int plusTwo= [](int a){
+    return a+2;
+};
 for (const auto& p: mySet){
 
     if (dynamic_cast<Student*>(p) != nullptr){ // if conversion to Student is successful
@@ -587,52 +621,25 @@ using namespace N;          // Make T visible without N::
 ```
 
 
-## Dynamic memory allocation (manual allocations)
-
-C Style:
+## Exception handling
 
 ```cpp
-// allocate 1D array
-int* intArray = (int*) malloc(nElems*sizeof(int));
+#include <stdexcept> // to access STL exception classes
 
-// deallocate 1D array
-free(intArray); //free takes a void*, but implicit conversion is made
-```
+try {
+  doSomething(); // this may throw an exception
+  
+  throw invalid_argument("received negative value");
+                 // you may throw an object yourself (in this case an exception)
+}
 
-C++ Style:
+catch (exception t) { // if t was thrown, catch it (do not crash program)
+  fixSomething();
+  cout << t.what() << endl; // print error message describing exception
+  throw; // throw t again if you want the program to crash
+}
 
-```cpp
-// allocate 2D array
-int** intMatrix = new int*[nLines];
-for (int i=0; i < nLines;++i) intMatrix[i] = new int[nCols];
-
-// deallocate 2D array
-for (int i=0; i < nLines;++i) delete[] intMatrix[i];
-delete[] intMatrix;
-```
-
-
-## `math.h`, `cmath` - floating point math
-
-```cpp
-#include <cmath>            // Include cmath (std namespace)
-sin(x); cos(x); tan(x);     // Trig functions, x (double) is in radians
-asin(x); acos(x); atan(x);  // Inverses
-atan2(y, x);                // atan(y/x)
-sinh(x); cosh(x); tanh(x);  // Hyperbolic sin, cos, tan functions
-exp(x); log(x); log10(x);   // e to the x, log base e, log base 10
-pow(x, y); sqrt(x);         // x to the y, square root
-ceil(x); floor(x);          // Round up or down (as a double)
-fabs(x); fmod(x, y);        // Absolute value, x mod y
-```
-
-
-## `assert.h`, `cassert` - debugging aid
-
-```cpp
-#include <cassert>        // Include iostream (std namespace)
-assert(e);                // if e is false, print message and abort
-#define NDEBUG            // (before #include <assert.h>), turn off assert
+catch (...) { doSomething(); }    // if a throws something else, jump here
 ```
 
 
@@ -943,6 +950,32 @@ srand(seed);              // Initialize random generator (only once in entire pr
 rand() % b + a;           // Return integer in range [a,b+a[
 ```
 
+
+## Dynamic memory allocation (manual allocations on the heap)
+
+C Style:
+
+```cpp
+// allocate 1D array
+int* intArray = (int*) malloc(nElems*sizeof(int));
+
+// deallocate 1D array
+free(intArray); //free takes a void*, but implicit conversion is made
+```
+
+C++ Style:
+
+```cpp
+// allocate 2D array
+int** intMatrix = new int*[nLines];
+for (int i=0; i < nLines;++i) intMatrix[i] = new int[nCols];
+
+// deallocate 2D array
+for (int i=0; i < nLines;++i) delete[] intMatrix[i];
+delete[] intMatrix;
+```
+
+
 ## `ctype.h` - some C Standard Library predicates
 
 Some predicates:
@@ -966,4 +999,28 @@ And to manipulate characters:
 ```cpp
 toupper(c); // Used to convert the character into uppercase.
 tolower(c); // Used to convert the character into lowercase.
+```
+
+
+## `math.h`, `cmath` - floating point math
+
+```cpp
+#include <cmath>            // Include cmath (std namespace)
+sin(x); cos(x); tan(x);     // Trig functions, x (double) is in radians
+asin(x); acos(x); atan(x);  // Inverses
+atan2(y, x);                // atan(y/x)
+sinh(x); cosh(x); tanh(x);  // Hyperbolic sin, cos, tan functions
+exp(x); log(x); log10(x);   // e to the x, log base e, log base 10
+pow(x, y); sqrt(x);         // x to the y, square root
+ceil(x); floor(x);          // Round up or down (as a double)
+fabs(x); fmod(x, y);        // Absolute value, x mod y
+```
+
+
+## `assert.h`, `cassert` - debugging aid
+
+```cpp
+#include <cassert>        // Include iostream (std namespace)
+assert(e);                // if e is false, print message and abort
+#define NDEBUG            // (before #include <assert.h>), turn off assert
 ```
