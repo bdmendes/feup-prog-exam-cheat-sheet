@@ -1043,7 +1043,7 @@ fabs(x); fmod(x, y);        // Absolute value, x mod y
 ```cpp
 #include <cassert>        // Include iostream (std namespace)
 
-// You can use a macro to quicly enable or disable assertion checks
+// You can use a macro to quickly enable or disable assertion checks
 #ifdef NDEBUG
 assert(e);                // if e is false, print message and abort
 #endif
