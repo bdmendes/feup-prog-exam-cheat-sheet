@@ -425,13 +425,15 @@ public:                     // Accessible to all
                             // int is a dummy parameter meaning postfix operator
 
     T(): x(1) {}            // Constructor with initialization list (avoid allocating x twice!)
-    T(const T& t): x(t.x) {}// Copy constructor (still a constructor... initialize T attributes)
     
-    T& operator=(const T& t)
-    {x=t.x; return *this; } // Assignment operator
+    T(const T& t): x(t.x) {}// Copy constructor (still a constructor... initialize T attributes)
                             // The compiler creates a default one for coincident class types
                             // The default one may raise issues such as unwanted aliasing
                             // eg. there are pointers as attributes of the class
+    
+    T& operator=(const T& t)
+    {x=t.x; return *this; } // Assignment operator
+                            // Again, the compiler might take care of this with side effects
     
     ~T();                   // Destructor (automatic cleanup routine)
                             // Put manual memory deallocations here if needed
@@ -946,22 +948,22 @@ rand() % b + a;           // Return integer in range [a,b+a[
 Some predicates:
 
 ```cpp
-isalpha() – Used to check if the character is an alphabet or not.
-isdigit() – Used to check if the character is a digit or not.
-isalnum() – Used to check if the character is alphanumeric or not.
-isupper() – Used to check if the character is in uppercase or not
-islower() – Used to check if the character is in lowercase or not.
-iscntrl() – Used to check if the character is a control character or not.
-isgraph() – Used to check if the character is a graphic character or not.
-isprint() – Used to check if the character is a printable character or not.
-ispunct() – Used to check if the character is a punctuation mark or not.
-isspace() – Used to check if the character is a white-space character or not.
-isxdigit() – Used to check if the character is hexadecimal or not.
+isalpha(c); // Used to check if the character is an alphabet or not.
+isdigit(c); // Used to check if the character is a digit or not.
+isalnum(c); // Used to check if the character is alphanumeric or not.
+isupper(c); // Used to check if the character is in uppercase or not
+islower(c); // Used to check if the character is in lowercase or not.
+iscntrl(c); // Used to check if the character is a control character or not.
+isgraph(c); // Used to check if the character is a graphic character or not.
+isprint(c); // Used to check if the character is a printable character or not.
+ispunct(c); // Used to check if the character is a punctuation mark or not.
+isspace(c); // Used to check if the character is a white-space character or not.
+isxdigit(c); // Used to check if the character is hexadecimal or not.
 ```
 
 And to manipulate characters:
 
 ```cpp
-toupper() – Used to convert the character into uppercase.
-tolower() – Used to convert the character into lowercase.
+toupper(c); // Used to convert the character into uppercase.
+tolower(c); // Used to convert the character into lowercase.
 ```
