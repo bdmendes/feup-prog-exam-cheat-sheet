@@ -240,7 +240,7 @@ extern "C" {void f();}   // f() was compiled in C
 [] is the list of acessible variables from the outer scope. Pass & to allow access to all.
 
 ```cpp
-bool isMove = [](const string& str){
+auto isMove = [](const string& str){ // must be auto; return type is deduced
     return str.size() == 2 && isupper(str.at(0)) && islower(str.at(1));
 };
 
