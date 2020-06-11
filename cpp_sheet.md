@@ -887,7 +887,7 @@ delete[] intMatrix;
 ```
 
 
-## `ctype.h` - some C Standard Library predicates (library already included in C++)
+## `ctype.h` - some C Standard Library predicates (included by default in C++)
 
 Some predicates:
 
