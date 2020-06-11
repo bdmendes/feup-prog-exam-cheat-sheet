@@ -8,6 +8,7 @@ PROG 19/20, FEUP
 Scenic Time
 ```
 
+---
 
 ## Preprocessor
 
@@ -22,8 +23,9 @@ Scenic Time
 #else                       // Optional (#ifndef X or #if !defined(X))
 #endif                      // Required after #if, #ifdef
 ```
-
-
+ 
+---
+ 
 ## Literals
 
 ```cpp
@@ -36,8 +38,9 @@ Scenic Time
 true, false                 // bool constants 1 and 0
 nullptr                     // Pointer type with the address of 0
 ```
-
-
+ 
+---
+ 
 ## Types; casts; declarations
 
 Know the standard C types:
@@ -118,8 +121,9 @@ int x;                      // Declare x in the stack. It's automatically popped
 static int x;               // Global lifetime even if local scope; cannot be used outside with extern
 extern int x;               // Compiler is able to access x declared in other translation units
 ```
-
-
+ 
+---
+ 
 ## Expressions
 
 ```cpp
@@ -179,8 +183,9 @@ x += y                      // x = x + y, also -= *= /= <<= >>= &= |= ^=
 
 x ? y : z                   // y if x, else z (ternary operator)
 ```
-
-
+ 
+---
+ 
 ## Statements
 
 ```cpp
@@ -214,8 +219,9 @@ break;                      // Jump out of while, do, or for loop, or switch
 continue;                   // Jump to bottom of while, do, or for loop
 return x;                   // Return x from function to caller
 ```
-
-
+ 
+---
+ 
 ## Functions
 
 ```cpp
@@ -233,8 +239,9 @@ T operator-(T x);        // allows T a; T b = -a;
 T operator++(int);       // postfix ++ or -- (parameter ignored)
 extern "C" {void f();}   // f() was compiled in C
 ```
-
-
+ 
+---
+ 
 ## Lambda functions - quick, disposable actions
 
 [] is the list of acessible variables from the outer scope. Pass & to allow access to all.
@@ -249,8 +256,9 @@ string candidate1("Ab"), candidate2("3A");
 // Is one of them a valid move?
 cout << isMove(candidate1) || isMove(candidate2); // print 1
 ```
-
-
+ 
+---
+ 
 ## Main function
 
 The main functions return the error code, 0 meaning all ok and up something went wrong.
@@ -264,7 +272,9 @@ int main(int argc, char* argv[]) { statements... }
         //argc -> number of arguments when running the program (default 1 - program name)
         //argv -> command strings (char**)
 ```
-
+ 
+---
+ 
 ## Unions
 
 Memory location of all members is the same, its size being determined by the largest of the data members. Only one may be used at given time.
@@ -279,8 +289,9 @@ union Numbers
 union Numbers n; // if you do union Numbers* n, access by n->x
 n.x = 2; // n.d also gets value 2
 ```
-
-
+ 
+---
+ 
 ## Enums
 
 Enums are a bit magical, being like declaring multiple integers that are related. Very useful to make switch readable.
@@ -303,8 +314,9 @@ switch (anotherDay){
        cout << "Time to work...\n";
 }
 ```
-
-
+ 
+---
+ 
 ## Classes; operator overloading
 
 Define the class in a header file:
@@ -404,8 +416,9 @@ bool operator==(const Date& d1, const Date& d2){
 }
 // Same as bool Date::operator==(const Date& other) const {conditions;};
 ```
-
-
+ 
+---
+ 
 ## Class inheritance and polymorphism
 
 Mind the acccess between base and child class members:
@@ -484,8 +497,9 @@ for (const auto& p: mySet){
 
 p = s; // possible but data is sliced away - slicing problem (s=p is illegal)
 ```
-
-
+ 
+---
+ 
 ## Templates - generic programming
 
 Like overloading, this kind of polymorphism is compile time defined.
@@ -512,8 +526,9 @@ Then use them for your specific needs:
 ```cpp
 X<int> x(3);                // Declare an object of type "X of int"
 ```
-
-
+ 
+---
+ 
 ## Namespaces - avoid naming conflicts
 
 ```cpp
@@ -521,8 +536,9 @@ namespace N {class T {};}   // Hide name T
 N::T t;                     // Use name T in namespace N
 using namespace N;          // Make T visible without N::
 ```
-
-
+ 
+---
+ 
 ## Exception handling
 
 ```cpp
@@ -543,8 +559,9 @@ catch (exception t) { // if t was thrown, catch it (do not crash program)
 
 catch (...) { doSomething(); }    // if a throws something else, jump here
 ```
-
-
+ 
+---
+ 
 ## `string` - variable sized character array (random iteration)
 
 ```cpp
@@ -564,8 +581,9 @@ s1 = to_string(12.05);    // Converts number to string
 getline(cin, s);          // Read line ending in '\n'
 s1.find("hello");         // Pointer to first char of found substring, if not found string::npos
 ```
-
-
+ 
+---
+ 
 ## `stringstream` (most methods are inherited from ios; allows input and output)
 
 ```cpp
@@ -599,8 +617,9 @@ istringstream iss(oss.str());
 while(ss >> temp) finalNoSpaces += temp;
 cout << finalNoSpaces;   // print "hidude"
 ```
-
-
+ 
+---
+ 
 ## `iostream.h`, `iostream` (replaces `stdio.h`; inherits from ios)
 
 ```cpp
@@ -631,9 +650,10 @@ To overload operators for streams:
 istream& operator>>(istream& i, T& x) {i >> ...; x=...; return i;}
 ostream& operator<<(ostream& o, const T& x) {return o << ...;} // << operator should not modify variable
 ```
-
-
-## `iomanip` (output manipulation)
+ 
+---
+ 
+## `iomanip` - output manipulation
 
 ```cpp
 // Suppose you have an hour between 0 and 24. To always output in the format HH you can do:
@@ -641,8 +661,9 @@ cout << setfill('0') << setw(2) << right << hour << endl;
                                   // or left (center does not exist)
                                   // instead of cout, you may also use stringstream
 ```
-
-
+ 
+---
+ 
 ## `fstream.h`, `fstream` (file I/O works like `cin`, `cout`)
 
 ```cpp
@@ -671,8 +692,9 @@ handle.seekp(place); // tries to put current writing position at place
 
 if (handle.fail()) handle.clear(); // if place is out of file bounds, clear error flag
 ```
-
-
+ 
+---
+ 
 ## `vector` - dynamic array (rapid insertions/deletions on back; random iteration)
 
 ```cpp
@@ -711,8 +733,9 @@ vector<T> c(n, x);        // c[0]..c[n-1] init to x
                           // you may use this syntax to initialize nested vectors
                           // eg. vector<vector<T>> c(nLines,vector<T>(nCols,valueToRepeat))
 ```
-
-
+ 
+---
+ 
 ## `deque` - stack queue (rapid insertions/deletions on front and back; random iteration)
 
 `deque<T>` is like `vector<T>`, but also supports:
@@ -724,8 +747,9 @@ deque a<int>;
 a.push_front(x);          // Puts x at a[0], shifts elements toward back
 a.pop_front();            // Removes a[0], shifts toward front
 ```
-
-
+ 
+---
+ 
 ## `list` - doubly linked list (rapid insertion/deletion everywhere, bidirectional iteration)
 
 You cannot access specified index without accessing all on the left/right.
@@ -743,8 +767,9 @@ l.remove(8);     // remove all elements == 8; reduce container size
 l.remove_if(f);  // same as above but use f as comp
 l.sort();        // only for lists, use std::sort for random iteration containers
 ```
-
-
+ 
+---
+ 
 ## `array` - statically sized array (lightweight wrapper around C array; random iteration)
 
 ```cpp
@@ -755,8 +780,9 @@ houses.at(2)                   // Return 4
 for (const auto& s: houses) {} // Range-based for loop is supported
 houses.size()                  // Return 3
 ```
-
-
+ 
+---
+ 
 ## `utility` (to use pair)
 
 ```cpp
@@ -766,8 +792,9 @@ pair<string, int> a("hello", 3); // A 2-element struct
 a.first;                         // "hello"
 a.second;                        // 3
 ```
-
-
+ 
+---
+ 
 ## `map` - ordered associative container (bidirectional iteration)
 
 If order is not important, use `unordered_map` instead.
@@ -783,8 +810,9 @@ for (const auto& p:a) cout << p.first << ": " << p.second;  // Prints "hello: 3"
 a.size();                 // 1
 a.empty()                 // Same as !a.size()
 ```
-
-
+ 
+---
+ 
 ## `set` - store unique elements ordered (bidirectional iteration)
 
 For insertion to work, the operator < must be defined between two objects of used type.
@@ -809,8 +837,9 @@ s.erase(123);  // no need to use iterators here (for vectors you did)
 
 cout << s.size();         // Number of elements in set
 ```
-
-
+ 
+---
+ 
 ## `algorithm` - collection of 60 algorithms on sequences with iterators
 
 ```cpp
@@ -835,8 +864,9 @@ remove(a.begin(),a.end(),value);       // Place non-removed elements at the begg
                                        // Capacity isn't changed
                                        // Returns pointer to after last non-removed element
 ```
-
-
+ 
+---
+ 
 ## `chrono` - time related library
 
 ```cpp
@@ -853,8 +883,9 @@ using ms = duration<float, milliseconds::period>; // typedef duration<float, mil
 
 cout << duration_cast<ms>(to - from).count() << "ms";
 ```
-
-
+ 
+---
+ 
 ## C style random integers
 
 ```cpp
@@ -867,8 +898,9 @@ auto seed =               // Get time since 1 Jan 1970
 srand(seed);              // Initialize random generator (only once in entire program)
 rand() % b + a;           // Return integer in range [a,b+a[
 ```
-
-
+ 
+---
+ 
 ## Dynamic memory allocation (manual allocations on the heap)
 
 C Style:
@@ -892,8 +924,9 @@ for (int i=0; i < nLines;++i) intMatrix[i] = new int[nCols];
 for (int i=0; i < nLines;++i) delete[] intMatrix[i];
 delete[] intMatrix;
 ```
-
-
+ 
+---
+ 
 ## `ctype.h` - some C Standard Library predicates (included by default in C++)
 
 Some predicates:
@@ -918,8 +951,9 @@ And to manipulate characters:
 toupper(c);  // Used to convert the character into uppercase.
 tolower(c);  // Used to convert the character into lowercase.
 ```
-
-
+ 
+---
+ 
 ## `math.h`, `cmath` - floating point math
 
 ```cpp
@@ -934,8 +968,9 @@ pow(x, y); sqrt(x);         // x to the y, square root
 ceil(x); floor(x);          // Round up or down (as a double)
 fabs(x); fmod(x, y);        // Absolute value, x mod y
 ```
-
-
+ 
+---
+ 
 ## `assert.h`, `cassert` - debugging aid
 
 The definition of the macro assert depends on another macro, NDEBUG, which is not defined by the standard library. 
@@ -946,8 +981,9 @@ The definition of the macro assert depends on another macro, NDEBUG, which is no
 
 assert(e);                // if e is false, print message and abort
 ```
-
-
+ 
+---
+ 
 ## Special Keywords
 
 Reserved keywords (may not be used in other contexts):
