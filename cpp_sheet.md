@@ -587,7 +587,7 @@ s1.find("hello");         // Pointer to first char of found substring, if not fo
 ## `stringstream` (most methods are inherited from ios; allows input and output)
 
 ```cpp
-#include <sstream> (std namespace)
+#include <sstream>              // Include sstream (std namespace)
 
 stringstream ss("Hello World"); // same as stringstream m; m << "Hello" << " World";
 ss.str();                       // Return "Hello World"
@@ -757,7 +757,7 @@ Therefore you can't do l.at(3) and neither l.begin()+3; only it++ and it--.
 The forward iteration version of this container is `forward_list`.
 
 ```cpp
-#include <list> (std namespace)
+#include <list>  // Include list (std namespace)
 
 list<int> l = {1,2,8,9,12,2};
 auto it = find(l.begin(),l.end(),9);
@@ -773,7 +773,7 @@ l.sort();        // only for lists, use std::sort for random iteration container
 ## `array` - statically sized array (lightweight wrapper around C array; random iteration)
 
 ```cpp
-#include <array> (std namespace)
+#include <array>               // Include array (std namespace)
 
 array<int,3> houses = {1,2,4};
 houses.at(2)                   // Return 4
