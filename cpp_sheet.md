@@ -406,11 +406,11 @@ bool operator==(const Date& d1, const Date& d2){
 
 Mind the acccess between base and child class members:
 
-|Inheritance form | Public in base     | Protected in base | Private in base |
-|-----------------|--------------------|--------------------|-----------------|
-|public           | public in child    | protected in child | -               |
-|protected        | protected in child | protected in child | -               |
-|private          | private in child   | private in child   | -               |
+|Inheritance form |Public in base     |Protected in base  |Private in base |
+|-----------------|-------------------|-------------------|----------------|
+|public           |public in child    |protected in child |-               |
+|protected        |protected in child |protected in child |-               |
+|private          |private in child   |private in child   |-               |
 
 
 Create a child class according to your needs:
