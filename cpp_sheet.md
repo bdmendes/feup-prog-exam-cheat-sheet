@@ -941,8 +941,7 @@ fabs(x); fmod(x, y);        // Absolute value, x mod y
 The definition of the macro assert depends on another macro, NDEBUG, which is not defined by the standard library. 
 
 ```cpp
-#include <cassert>        // Include iostream (std namespace)
-
+#include <cassert>
 #define NDEBUG            // quickly disable all assertions by commenting this line
 
 assert(e);                // if e is false, print message and abort
