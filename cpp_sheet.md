@@ -312,13 +312,17 @@ Define the class in a header file:
 ```cpp
 #pragma once                // Header files use this directive to avoid conflicting symbols
 
-class T {                   // A new type
+class T {                   // A user defined type
 private:                    // Section accessible only to T's member functions
 protected:                  // Also accessible to classes derived from T
 public:                     // Accessible to all
+
     int x;                  // Member data
     void f();               // Member function
-    void g() {return;}      // Inline member function
+    
+    T& g() {return *this;}  // Inline member function
+                            // Return *this to allow chains of setters/getters
+    
     void h() const;         // Does not modify any data members
     
     int operator+(int y);   // t+y means t.operator+(y)
