@@ -324,6 +324,24 @@ Define the class in a header file:
 ```cpp
 #pragma once                // Header files use this directive to avoid conflicting symbols
 
+
+Fraction operator+(const Fraction& left, const Fraction& right);
+Fraction operator-(const Fraction& left, const Fraction& right); 
+Fraction operator*(const Fraction& left, const Fraction& right); 
+Fraction operator/(const Fraction& left, const Fraction& right); 
+Fraction operator-(const Fraction& value); // unary minus 285 
+bool operator==(const Fraction& left, const Fraction& right); 
+bool operator==(const Fraction& left, int intValue); 
+bool operator!=(const Fraction& left, const Fraction& right); 
+bool operator<(const Fraction& left, const Fraction& right); 
+bool operator<=(const Fraction& left, const Fraction& right); 
+bool operator>(const Fraction& left, const Fraction& right); 
+bool operator>=(const Fraction& left, const Fraction& right);  
+
+ostream& operator<<(ostream& out, const Fraction& value); 
+istream& operator>>(istream& in, Fraction& value);
+
+
 class T {                   // A user defined type
 private:                    // Section accessible only to T's member functions
 protected:                  // Also accessible to classes derived from T
