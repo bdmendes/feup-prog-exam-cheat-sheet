@@ -738,7 +738,7 @@ f.read((char *) data, nBytes); // read nBytes and assign them to data
 You can have some fun with the cursor position and random access the files:
 
 ```cpp
-file.seekg(offset,flag);   // Put cursor on flag and move offset bytes (reading purposes)
+file.seekg(offset,flag);   // Put cursor on flag and move offset (reading purposes)
                            // Some flags:
                            // ios::beg - beggining of the file
                            // ios::cur - current cursor position
