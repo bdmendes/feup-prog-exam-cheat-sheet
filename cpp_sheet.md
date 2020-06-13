@@ -75,6 +75,10 @@ int x=255;                  // Declare and initialize x to 255
 int a, b, c;                // Multiple declarations
 
 int a[10];                  // Array of 10 ints (a[0] through a[9])
+
+int a[10] = {2};            // Only first element is 2
+                            // Other elements contents depend on the implementation
+
 int a[]={0,1,2};            // Initialized array (or a[3]={0,1,2}; )
                             // You may deduce size of this by doing sizeof(a)/sizeof(int)
                             // However sometimes you lose this ability due to pointer decay
@@ -597,7 +601,7 @@ ss.str();                       // Return "Hello World"
 ss << 127;                      // operator << is overloaded for number types
 while (ss >> a) temp+=a;        // extract all ss words; all spaces are stripped (>> operator)
 while (getline(ss,a,'\n')) temp+=a;  // read lines; spaces are kept; '\n' is consumed
-ss >> hour >> sep >> minute;    // If "12:27" is on ss, int hour becomes 12 and int minute 27
+ss >> hour >> sep >> minute;    // If "12 : 27" is on ss, int hour becomes 12 and int minute 27
                                 // sep must be a char or rest of the string would be consumed
 ```
 
@@ -634,6 +638,9 @@ cin >> x >> y;              // Read words x and y from stdin (set fail flags if 
                             
 if (cin)                    // Good state (same as !cin.fail() && !cin.eof())
 if (!cin) cin.clear();      // Set error flags to 0
+
+while(cin>>var) {a;}        // do a; until input type mismatches var type or eof
+
 cin.ignore(nChars,Delim);   // Ignore nChars characters or until delimiter found
                             // If a fail occured because of type mismatch, there are chars in the buffer
                             // In that case you must ignore after clearing to allow new input
@@ -646,7 +653,7 @@ cin.peek(c);                // Read char, store in c, do not consume it (still a
 cin.getline(s, n, '\n');    // Read line into char s[n] to '\n' (default)
 ```
 
-Any function that returns a stream must use references.
+Any function that works on streams must use references (so that chains like stream << var1 << var2 work).
 To overload operators for streams:
 
 ```cpp
@@ -658,7 +665,7 @@ ostream& operator<<(ostream& o, const T& x) {return o << ...;} // << operator sh
  
 ## `iomanip` - output manipulation
 
-Suppose you have an hour between 0 and 24. To always output in the format HH you can do:
+Suppose you have an int hour between 0 and 24. To always output in the format HH you can do:
 
 ```cpp
 cout << setfill('0') << setw(2) << right << hour << endl;
@@ -683,7 +690,7 @@ cout << setprecision(2) << fixed << pi;     // print 3.14 (two digits after floa
 
 ifstream f1("filename");    // Open text file for reading
 if (f1)                     // Test if open and input available
-    f1 >> x;                // Read object from file 
+f1 >> x;                    // Read object from file 
 f1.get(c);                  // Read char or line into c
 
 while (getline(inputStream, str)) outputStream << str;  // Read file line by line
@@ -692,7 +699,21 @@ ofstream f2("filename");    // Open file for writing
 if (f2) f2 << x;            // Write to file
 ```
 
-Be aware of the random access files methods:
+You can open files with the following flags:
+
+```cpp
+ios::in	        // open for input operations.
+ios::out	// Open for output operations.
+ios::binary	// Open in binary mode.
+
+ios::ate	// Set the initial position at the end of the file
+                // If not used, will set position at the beggining
+
+ios::app	// Output operations append to the end of the file
+ios::trunc	// Replace current file contents if file exists
+```
+
+You can random access files:
 
 ```cpp
 // work in progress
@@ -730,10 +751,11 @@ a.erase(remove_if(a.begin(), a.end(), isOdd), a.end());
 
 a.insert(a.begin()+2,12)  // Make a[2] 12; shifts remaining to the right (linear complexity)
 
-for (int& p : a)  p=0;  // In C++11 you do not need to use iterators for a quick iteration
+for (int& p : a)  p=0;    // In C++11 you do not need to use iterators for a quick iteration
 for (vector<int>::iterator p=a.begin(); p!=a.end(); ++p)  *p=0;  // C++03 had no range-based for loop
 
 vector<int> b(a.begin(), a.end());  // same as b = a;
+
 vector<T> c(n, x);        // c[0]..c[n-1] init to x
                           // you may use this syntax to initialize nested vectors
                           // eg. vector<vector<T>> c(nLines,vector<T>(nCols,valueToRepeat))
@@ -862,7 +884,7 @@ retiros.insert(make_pair("Osvaldo",2));
 // Print all pairs with "Osvaldo" key
 auto range = retiros.equal_range("Osvaldo");
 for (auto it = range.first; it != range.second; ++it)
-    std::cout << it->first << ": " << it-> second << endl;
+    std::cout << it->first << ": " << it->second << endl;
 
 // Iterate all pairs for more flexibility
 for (const auto& it: retiros)
