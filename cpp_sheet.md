@@ -639,7 +639,9 @@ cin >> x >> y;              // Read words x and y from stdin (set fail flags if 
 if (cin)                    // Good state (same as !cin.fail() && !cin.eof())
 if (!cin) cin.clear();      // Set error flags to 0
 
-while(cin>>var) {a;}        // do a; until input type mismatches var type or eof
+while(cin>>var) {a;}        // store input in var (until whitespace) and do a; in loop
+                            // if input and var types mismatch, fail flag is set and loop breaks
+                            // eof flag (ctrl-z on windows and ctrl-d on linux) will also break
 
 cin.ignore(nChars,Delim);   // Ignore nChars characters or until delimiter found
                             // If a fail occured because of type mismatch, there are chars in the buffer
