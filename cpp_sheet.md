@@ -807,7 +807,7 @@ a.second;                        // 3
 ## `tuple` - fixed-size collection of heterogeneous values (generalization of pair)
 
 ```cpp
-#include <tuple>
+#include <tuple>                 // Include tuple (std namespace)
 
 tuple student<string,int,int>;
 student = {"Ana",12,13};  // in earlier C++ versions, student = make_tuple("Ana",12,13)
