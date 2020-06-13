@@ -545,7 +545,7 @@ using namespace N;          // Make T visible without N::
  
 ---
  
-## Exception handling
+## Exceptions - signal errors
 
 ```cpp
 #include <stdexcept> // to access STL exception classes
@@ -554,11 +554,11 @@ try {
   doSomething(); // this may throw an exception
   
   throw logic_error("received negative value");
-                 // you may throw an object yourself (in this case an exception)
+                 // you may throw an object yourself (in this case a std::exception)
                  // runtime_error is another common std::exception
                  // base class std::exception can't be constructed with string or char*
 }
-catch (exception t) { // if t was thrown, catch it (do not crash program)
+catch (exception t) { // you could catch any object type (in this case a std::exception)
   fixSomething();
   cout << t.what() << endl; // print error message describing exception
   throw; // throw t again if you want the program to crash
