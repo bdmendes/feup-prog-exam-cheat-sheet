@@ -559,11 +559,10 @@ try {
                  // base class std::exception can't be constructed with string or char*
 }
 catch (exception t) { // you could catch any object type (in this case a std::exception)
-  fixSomething();
   cout << t.what() << endl; // print error message describing exception
   throw; // throw t again if you want the program to crash
 }
-catch (...) { doSomething(); }    // if a throws something else, jump here
+catch (...) { doSomething(); } // catch any thrown object (if previous catch didn't)
 ```
  
 ---
