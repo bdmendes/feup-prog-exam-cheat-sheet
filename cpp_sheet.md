@@ -553,16 +553,16 @@ using namespace N;          // Make T visible without N::
 try {
   doSomething(); // this may throw an exception
   
-  throw invalid_argument("received negative value");
+  throw logic_error("received negative value");
                  // you may throw an object yourself (in this case an exception)
+                 // runtime_error is another common std::exception
+                 // base class std::exception can't be constructed with string or char*
 }
-
 catch (exception t) { // if t was thrown, catch it (do not crash program)
   fixSomething();
   cout << t.what() << endl; // print error message describing exception
   throw; // throw t again if you want the program to crash
 }
-
 catch (...) { doSomething(); }    // if a throws something else, jump here
 ```
  
