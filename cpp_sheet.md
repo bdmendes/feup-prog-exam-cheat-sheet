@@ -658,16 +658,25 @@ ostream& operator<<(ostream& o, const T& x) {return o << ...;} // << operator sh
  
 ## `iomanip` - output manipulation
 
+Suppose you have an hour between 0 and 24. To always output in the format HH you can do:
+
 ```cpp
-// Suppose you have an hour between 0 and 24. To always output in the format HH you can do:
 cout << setfill('0') << setw(2) << right << hour << endl;
                                   // or left (center does not exist)
                                   // instead of cout, you may also use stringstream
 ```
+
+You may also manipulate number output:
+
+```cpp
+float pi = 3.1415;
+cout << setprecision(2) << pi;    // print 3.1 (two digits in total)
+cout << setprecision(2) << fixed << pi;     // print 3.14 (two digits after floating point)
+```
  
 ---
  
-## `fstream.h`, `fstream` (file I/O works like `cin`, `cout`)
+## `fstream.h`, `fstream` - file input/output (works mostly like `cin` and `cout`)
 
 ```cpp
 #include <fstream>          // Include filestream (std namespace)
@@ -675,25 +684,18 @@ cout << setfill('0') << setw(2) << right << hour << endl;
 ifstream f1("filename");    // Open text file for reading
 if (f1)                     // Test if open and input available
     f1 >> x;                // Read object from file 
-f1.get(c);                  // Read char or line
-while (getline(inputStream, strng)) outputStream << strng;  // Read file line by line
+f1.get(c);                  // Read char or line into c
+
+while (getline(inputStream, str)) outputStream << str;  // Read file line by line
 
 ofstream f2("filename");    // Open file for writing
 if (f2) f2 << x;            // Write to file
 ```
 
-For random access files be aware of stream pointers:
+Be aware of the random access files methods:
 
 ```cpp
-fstream handle("filename",ios::binary); // open in binary mode to access char by char
-
-handle.tellg(); // returns pointer to current location
-handle.seekg(place); // tries to put current reading position at place
-
-handle.tellp(); // returns pointer to current location
-handle.seekp(place); // tries to put current writing position at place
-
-if (handle.fail()) handle.clear(); // if place is out of file bounds, clear error flag
+// work in progress
 ```
  
 ---
@@ -829,12 +831,42 @@ If order is not important, use `unordered_map` instead.
 #include <map>            // Include map (std namespace)
 
 map<string, int> a;       // Map from string to int
+
 a["hello"] = 3;           // Add or replace element a["hello"]
+                          // Same as: a.insert(make_pair("hello",3))
+
 a.erase("hello");         // Erase by key
 a.clear();                // Erase all map elements, leaving size at 0
+
 for (const auto& p:a) cout << p.first << ": " << p.second;  // Prints "hello: 3"
+
 a.size();                 // 1
 a.empty()                 // Same as !a.size()
+```
+ 
+---
+ 
+## `multimap` - store non-unique key-value pairs (bidirectional iteration)
+
+While `map` can only store unique key-value pairs, `multimap` stores all pairs, including repeated ones.
+If you want non-repeated keys with multiple values, consider `map<keyType,set<valueType>>` instead.
+
+```cpp
+#include <map>             // Include map (std namespace); multimap does not exist
+
+multimap<string,int> retiros;
+retiros.insert(make_pair("Osvaldo",0));
+retiros.insert(make_pair("Osvaldo",0));
+retiros.insert(make_pair("Osvaldo",2));
+
+// Print all pairs with "Osvaldo" key
+auto range = retiros.equal_range("Osvaldo");
+for (auto it = range.first; it != range.second; ++it)
+    std::cout << it->first << ": " << it-> second << endl;
+
+// Iterate all pairs for more flexibility
+for (const auto& it: retiros)
+    // compare it.first and it.second with desired conditions
 ```
  
 ---
@@ -859,6 +891,7 @@ set<Player*,decltype(comp)*> players(comp); // You cannot define operator < (nei
 s.insert(123);            // Add element to set
 
 if (s.find(123) != s.end()) // find is set specific (use find for other containers)
+
 s.erase(123);  // no need to use iterators here (for vectors you did)
 
 cout << s.size();         // Number of elements in set
