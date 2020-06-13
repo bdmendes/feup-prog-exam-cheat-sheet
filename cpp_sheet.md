@@ -139,6 +139,8 @@ a[i]                        // i'th element of array a
 f(x,y)                      // Call to function f with arguments x and y
 T(x,y)                      // Object of class T initialized with x and y
 typeid(x)                   // Returns reference to object of type of x (access name with .name())
+decltype(x)                 // Get type of x
+                            // Useful for generic programming or to pass objects as their type
 
 sizeof(x)                   // Number of bytes used to represent object x
 sizeof(T)                   // Number of bytes to represent type T
@@ -562,7 +564,7 @@ catch (...) { doSomething(); }    // if a throws something else, jump here
  
 ---
  
-## `string` - variable sized character array (random iteration)
+## `string` - variable sized character container (vector-like; random iteration)
 
 ```cpp
 #include <string>         // Include string (std namespace)
@@ -570,7 +572,8 @@ catch (...) { doSomething(); }    // if a throws something else, jump here
 string s1, s2="hello";    // Create strings
 string repeated('c',4):   // Same as string("cccc");
 s1.size();                // Number of characters ('\n' is not counted)
-s1 += " world";           // Concatenation (only with other strings!)
+s1 += " world";           // Concatenation with other string
+s1 += '!';                // Concatenation with char (same as s1.push_back('!'))
 int n = stoi("127");      // Converts string to integer
 s1 == "hello world"       // Comparison, also <, >, !=, etc.
 s1[0];                    // 'h'; use s1.at(0) to be able to handle out of bounds exceptions
@@ -765,7 +768,13 @@ l.insert(it,23); //insert 23 at position where 9 is; shift towards right
 
 l.remove(8);     // remove all elements == 8; reduce container size
 l.remove_if(f);  // same as above but use f as comp
+
 l.sort();        // only for lists, use std::sort for random iteration containers
+                 // use l.sort(comp) for your own condition
+                 
+l.unique();      // removes all but the first from every consecutive group of equal elements
+                 // l must be sorted for best results
+                 // do l.unique(comp) to test for your own condition instead of equality
 ```
  
 ---
@@ -795,8 +804,25 @@ a.second;                        // 3
  
 ---
  
+## `tuple` - fixed-size collection of heterogeneous values (generalization of pair)
+
+```cpp
+#include <tuple>
+
+tuple student<string,int,int>;
+student = {"Ana",12,13};  // in earlier C++ versions, student = make_tuple("Ana",12,13)
+string studentName = get<0>(student);  // cannot do student.at(0)
+std::cout << tuple_size<decltype(student)>::value; // Print 3
+
+string name; int grade1,grade2;
+tie(name,grade1,grade2) = student; // unpack tuple into variables
+```
+ 
+---
+ 
 ## `map` - ordered associative container (bidirectional iteration)
 
+The operator < must be defined between two key objects.
 If order is not important, use `unordered_map` instead.
 
 ```cpp
@@ -840,7 +866,7 @@ cout << s.size();         // Number of elements in set
  
 ---
  
-## `algorithm` - collection of 60 algorithms on sequences with iterators
+## `algorithm` - collection of algorithms on sequences with iterators
 
 ```cpp
 #include <algorithm>                   // Include algorithm (std namespace)
@@ -863,6 +889,10 @@ search(a.begin(),a.end(),sequence.begin(),sequence.end(); // Iterator to first o
 remove(a.begin(),a.end(),value);       // Place non-removed elements at the beggining
                                        // Capacity isn't changed
                                        // Returns pointer to after last non-removed element
+                                       
+set_intersection(v1.begin(),v1.end(),v2.begin(),v2.end(),
+                 inserter(intersectionVector,intersectionVector.begin()));
+                                       // insert into intersectionVector the v1 and v2 common values
 ```
  
 ---
@@ -907,7 +937,10 @@ C Style:
 
 ```cpp
 // allocate 1D array
-int* intArray = (int*) malloc(nElems*sizeof(int));
+int* intArray = (int*) malloc(nElems * sizeof(int));
+
+// reallocate more memory to intArray if needed
+intArray = (int*) realloc(intArray, newNElems * sizeof(int));
 
 // deallocate 1D array
 free(intArray); //free takes a void*, but implicit conversion is made
@@ -921,8 +954,8 @@ int** intMatrix = new int*[nLines];
 for (int i=0; i < nLines;++i) intMatrix[i] = new int[nCols];
 
 // deallocate 2D array
-for (int i=0; i < nLines;++i) delete[] intMatrix[i];
-delete[] intMatrix;
+for (int i=0; i < nLines;++i) if (intMatrix[i] != nullptr) delete[] intMatrix[i];
+if (intMatrix != nullptr) delete[] intMatrix;
 ```
  
 ---
