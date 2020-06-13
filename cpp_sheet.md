@@ -685,6 +685,8 @@ cout << setprecision(2) << fixed << pi;     // print 3.14 (two digits after floa
  
 ## `fstream.h`, `fstream` - file input/output (works mostly like `cin` and `cout`)
 
+If you pass filename to the `ifstream` and `ofstream` constructors, the opening and closing are taken care for you:
+
 ```cpp
 #include <fstream>          // Include filestream (std namespace)
 
@@ -699,24 +701,57 @@ ofstream f2("filename");    // Open file for writing
 if (f2) f2 << x;            // Write to file
 ```
 
-You can open files with the following flags:
+You may use `fstream` and open with flags (do not forget closing):
 
 ```cpp
-ios::in	        // open for input operations.
-ios::out	// Open for output operations.
-ios::binary	// Open in binary mode.
+fstream file;
+file.open(filename,flag1|flag2...);
+               // Some flags:
+               // ios::in - open for input operations.
+               // ios::out - open for output operations.
+               // ios::binary - open in binary mode.
+               // ios::app - output operations append to the end of the file
+               // ios::ate - same as ios::app but you can move the file cursor
+               // ios::trunc - replace current file contents if file exists (used by default)
 
-ios::ate	// Set the initial position at the end of the file
-                // If not used, will set position at the beggining
+if (file.is_open()) std::cout << "open file"; // check manually if file exists
 
-ios::app	// Output operations append to the end of the file
-ios::trunc	// Replace current file contents if file exists
+if (file.eof()) file.clear(); // if you read until the end, clear the eof flags to reuse
+
+file.close() // mandatory
 ```
 
-You can random access files:
+You can write or read from the current cursor position a bunch of data:
 
 ```cpp
-// work in progress
+// To correctly use these operations, file must be open in binary mode.
+// You won't be able to open them with a text editor.
+
+file.write((char *) data, nBytes) << flush; // write first nBytes of data variable
+                                            // eg. data is an array or a struct
+                                            // pass sizeof(dataType) to write all data
+
+f.read((char *) data, nBytes); // read nBytes and assign them to data
+                               // file contents must be ordered correctly
+```
+
+You can have some fun with the cursor position and random access the files:
+
+```cpp
+file.seekg(offset,flag);   // Put cursor on flag and move offset bytes (reading purposes)
+                           // Some flags:
+                           // ios::beg - beggining of the file
+                           // ios::cur - current cursor position
+                           // ios::end - end of the file (use non-positive offsets)
+
+// If you were reading struct Person instances you would do
+// file.seekg(recordNumber * sizeof(Person), ios::beg);
+// before reading (check above)
+
+file.seekp(offset,flag);  // Same but for writing purposes
+
+file.tellg();    // Return reading cursor position
+file.tellp();    // Return writing cursor position
 ```
  
 ---
