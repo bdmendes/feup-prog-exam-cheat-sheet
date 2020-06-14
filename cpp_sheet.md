@@ -554,11 +554,11 @@ try {
   doSomething(); // this may throw an exception
   
   throw logic_error("received negative value");
-                 // you may throw an object yourself (in this case a std::exception)
+                 // you may throw an exception yourself at any time
+                 // an exception may be a std::exception, or any other object
                  // runtime_error is another common std::exception
-                 // base class std::exception can't be constructed with string or char*
 }
-catch (exception t) { // you could catch any object type (in this case a std::exception)
+catch (objectType t) { // you could catch any object type (in this case a std::exception)
   cout << t.what() << endl; // print error message describing exception
   throw; // throw t again if you want the program to crash
 }
