@@ -558,11 +558,11 @@ try {
                  // an exception may be a std::exception, or any other object
                  // runtime_error is another common std::exception
 }
-catch (objectType t) { // you can catch any object type (eg. a std::exception)
-  cout << t.what() << endl; // print error message describing exception
+catch (exception t) { // you could catch any thrown object instead of std::exception
+  cout << t.what() << endl; // print error message (only for std::exception and derived classes)
   throw; // throw t again if you want the program to crash
 }
-catch (...) { doSomething(); } // catch any thrown object (if previous catch didn't)
+catch (...) { doSomething(); } // catch all other thrown object types (if previous catch didn't)
 ```
  
 ---
