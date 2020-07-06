@@ -1,13 +1,5 @@
 # C++ Exam Cheat Sheet
 
-```
-This C++ cheat sheet is adapted from https://github.com/mortennobel/cpp-cheatsheet.
-All statements assume using namespace std (you may still use std::).
-As of C++20 standard.
-PROG 19/20, FEUP
-Scenic Time
-```
-
 ---
 
 ## Preprocessor
@@ -15,7 +7,7 @@ Scenic Time
 ```cpp
 #include  <stdio.h>         // Insert standard header file
 #include "myfile.h"         // Insert file in current directory
-#define X some text         // Replace X with some text
+#define X something         // Replace X with something
 #define F(a,b) a+b          // Replace F(1,2) with 1+2
 #undef X                    // Remove definition
 
@@ -64,6 +56,7 @@ static_cast<T>(x)           // Converts x to a T, for simple data types
                             // Does not work with classe types
                             
 reinterpret_cast<T>(x)      // Interpret bits of x as a T
+
 const_cast<T>(x)            // Casts away const
 ```
 
@@ -74,42 +67,31 @@ int x;                      // Declare x to be an integer (value undefined)
 int x=255;                  // Declare and initialize x to 255
 int a, b, c;                // Multiple declarations
 
-int a[10];                  // Array of 10 ints (a[0] through a[9])
+int a[10];                  // Array of 10 ints (a[0] through a[9]); non-defined values
 
-int a[10] = {2};            // Only first element is 2
-                            // Other elements contents depend on the implementation
-
-int a[]={0,1,2};            // Initialized array (or a[3]={0,1,2}; )
-                            // You may deduce size of this by doing sizeof(a)/sizeof(int)
-                            // However sometimes you lose this ability due to pointer decay
-                            // Always pass size as parameter
+int a[]={0,1,2};            // Initialized array
+                            // You can't check array size; pass as parameter
 
 int a[][2]={{1,2},{4,5}};   // Array of array of ints (only first dimension can be deduced!)
-char s[]="hello";           // C String (6 elements including '\0'); same as char* s = "hello"
+
+char s[]="hello";           // C String (6 elements including '\0')
+                            // Same as char* s = "hello"
 
 int *p,*a;                  // p and a are pointers to ints
-                            // if you did int* p,a; a would not be a pointer!
+                            // * before a is necessary; otherwise a would be int
 
-char* s = "hello";          // s points to first element of array
-void* p = nullptr;          // Address of untyped memory (nullptr is 0)
 int& r = x;                 // r is a reference to (alias of) int x
 
-int* r = x;                 // r is the memory location of x
-
-                            // if x is an array of allocated memory (unallocated: undefined behaviour)
-                            // do r++ to jump sizeof(int) bytes in the memory (access next index)
-                            // you can still do r[index] after this declaration
+int* r = x;                 // r is the memory location of int array x
+                            // if memory is properly allocated, do r++ to jump to next element
 
 typedef String char*;       // String s; means char* s;
-                            // same as using String = char*;
-
-const int c = 3;            // Constants must be initialized, cannot assign to (read-only)
-constexpr int = d;          // Same but d must be known at compile time (e.g. d cannot be a parameter)
+                            // same as: using String = char*;
 
 auto it = m.begin();        // Auto deduces type of variable (in this case an iterator)
 ```
 
-Always read right to left:
+Read constant qualifiers right to left:
 
 ```cpp
 const int* p=a;             // p is a pointer to a int that is constant (might point elsewhere)
@@ -131,50 +113,41 @@ extern int x;               // Compiler is able to access x declared in other tr
 ## Expressions
 
 ```cpp
-T::X                        // Name X defined in class T
-N::X                        // Name X defined in namespace N
+T::X                        // Name X defined in namespace/class T
 ::X                         // Global name X
 
 t.x                         // Member x of struct or class t
 p->x                        // Member x of struct or class or union that p points to
-                            // Dereference to use same syntax as above: (*p).x
+                            // Same as (*p).x - notice the parentheses!
 
 a[i]                        // i'th element of array a
 f(x,y)                      // Call to function f with arguments x and y
 T(x,y)                      // Object of class T initialized with x and y
+
 typeid(x)                   // Returns reference to object of type of x (access name with .name())
 decltype(x)                 // Get type of x
-                            // Useful for generic programming or to pass objects as their type
 
 sizeof(x)                   // Number of bytes used to represent object x
 sizeof(T)                   // Number of bytes to represent type T
+
 x++                         // Add 1 to x, evaluates to original x (postfix)
-x--                         // Subtract 1 from x, evaluates to original x (postfix)
-++x                         // Add 1 to x, evaluates to new value (prefix)
 --x                         // Subtract 1 from x, evaluates to new value (prefix)
+
 ~x                          // Bitwise complement of x
-!x                          // true if x is 0, else false (1 or 0 in C)
+!x                          // true if x is 0, else false
+
 &x                          // Address of x
 *p                          // Contents of address p (*&x equals x)
 (T) x                       // Convert x to T (obsolete, use .._cast<T>(x))
 
-x * y                       // Multiply
-x / y                       // Divide (return same type of operands - 3/2 is 1)
+x / y                       // Divide
+                            // +, -, * are also available 
+                            // Return same type of operands (3/2=1)
+
 x % y                       // Modulo (result has sign of x, unlike python!)
 
-x + y                       // Add, or \&x[y]
-x - y                       // Subtract, or number of elements from *x to *y
-x << y                      // x shifted y bits to left (x * pow(2, y))
-x >> y                      // x shifted y bits to right (x / pow(2, y))
-
 x < y                       // Less than
-x <= y                      // Less than or equal to
-x > y                       // Greater than
-x >= y                      // Greater than or equal to
-
-x & y                       // Bitwise and (3 & 6 is 2)
-x ^ y                       // Bitwise exclusive or (3 ^ 6 is 5)
-x | y                       // Bitwise or (3 | 6 is 7)
+                            // <=, >, >= are also available
 
 cond1 && cond2              // cond1 and cond2
                             // if cond1 is false, cond2 is not evaluated
@@ -185,7 +158,9 @@ cond1 || cond2              // cond1 or cond2
                             // to force cond2 execution, do cond1 | cond2
                             
 x = y                       // Assign y to x, returns new value of x
-x += y                      // x = x + y, also -= *= /= <<= >>= &= |= ^=
+
+x += y                      // x = x + y
+                            // -= *= /= <<= >>= &= |= ^= are also available
 
 x ? y : z                   // y if x, else z (ternary operator)
 ```
@@ -207,22 +182,25 @@ else if (y) b;              // if not x and y (optional, may be ed)
 else c;                     // if not x and not y (optional)
 
 while (cond) a;             // Repeat while cond is true
-                            // ints may be evaluated as conditions (0 false; else true)
 
-for (initial; cond; inc) a; // Equivalent to: initial; while(cond) {cond; inc;}
+for (int i=0; cond; i++) a; // Condition-based for loop
 
-for (t elem : container) a; // Range-based for loop - do a; for each COPY of element in container
+for (t elem : container) a; // Range-based for loop
 
 do a; while (x);            // Equivalent to: a; while(x) a;
 
 switch (x) {                // x must be integer known at compile time
-    case X1: a;             // if x == X1, do a; b; c; (everyting is executed until break)
-    case X2: b;             // if x == X2, do b; c; (use break if c; is not desired)
-    default: c;             // Same as if (true)
+    case X1: 
+       a;    
+       break;               // If you don't call break, everything below is executed too
+
+    default:                // x is anything
+       c;                   
 }
 
 break;                      // Jump out of while, do, or for loop, or switch
 continue;                   // Jump to bottom of while, do, or for loop
+
 return x;                   // Return x from function to caller
 ```
  
@@ -232,17 +210,19 @@ return x;                   // Return x from function to caller
 
 ```cpp
 int f(int x, int y);     // f is a function taking 2 ints BY COPY and returning int BY COPY
+
 Player& f(Player &x);    // f is a function taking 1 Player BY REFERENCE and returning it BY REFERENCE
                          // make sure that the return object does not get popped out of stack/scope!
 
 int f(int x);            // overload of f (change parameters, return type alone is not enough)
-void f();                // f is a procedure taking no arguments
+
 void f(int a=0);         // Default parameters always come after non-default ones
-f();                     // Default return type is int (bad practice to hide this info)
-inline f() {statement;}  // Optimize for speed when defined in this translation unit
+
 f() { statements; }      // Function definition (must be global)
-T operator-(T x);        // allows T a; T b = -a;
-T operator++(int);       // postfix ++ or -- (parameter ignored)
+
+T operator-(T x);        // Operator overloading (prefix)
+T operator++(int);       // Operator overloading (postfix; int is a dummy parameter)
+
 extern "C" {void f();}   // f() was compiled in C
 ```
  
@@ -267,14 +247,13 @@ cout << isMove(candidate1) || isMove(candidate2); // print 1
  
 ## Main function
 
-The main functions return the error code, 0 meaning all ok and up something went wrong.
-At any time, use exit(intError) to stop the program and return intError in main.
+The main function is the starting point of any program.
+By convention, should return 0 if everything went fine, else if any error occured.
+Main parameters are command line arguments:
 
 ```cpp
-int main()  { statements... }     // main is the starting point of any program
+int main(int argc, char* argv[]) { statements; return 0; }
 
-// One can make main recognize command line arguments:
-int main(int argc, char* argv[]) { statements... }
         //argc -> number of arguments when running the program (default 1 - program name)
         //argv -> command strings (char**)
 ```
@@ -331,12 +310,10 @@ Define the class in a header file:
 #pragma once                // Header files use this directive to avoid conflicting symbols
 
 class T {                   // A user defined type
-private:                    // Section accessible only to T's member functions
-protected:                  // Also accessible to classes derived from T
-public:                     // Accessible to all
+private:                    // Accessibility of the attributes/methods (public, protected...)
 
     int x;                  // Member data
-    void f();               // Member function
+    void f();               // Member function (method)
     
     T& g() {return *this;}  // Inline member function
                             // Return *this to allow chains of setters/getters
@@ -348,37 +325,25 @@ public:                     // Accessible to all
     
     T& operator++();        // ++t means t.operator++()
     T operator++(int);      // t++ means t.operator++(int)
-                            // int is a dummy parameter meaning postfix operator
 
     // You cannot overload << and >> for streams inside the class definition
     // Check `iostream` for how to do this via a function
 
     T(): x(1) {}            // Constructor with member initialization list
                             // Class attributes are initialized before the body of the constructor
-                            // So if instead of using lists you did T() {x=1;}
-                            // x would be initialized with nothing and then assigned - what a waste!
+                            // Use initializer lists to avoid wasted empty attribute instances
+
+    // Default/copy constructors, assignement operator, etc may be generated automatically
+    // Revert this behaviour by defining them yourself
     
-                            // A default constructor (no parameters) is generated automatically
-                            // Unless you define other constructors yourself
-                            // If in that case you still want the compiler generated constructor
-                            // Do explicitly: T() = default;
-                            
-                            // The compiler also generates T(T otherWithSameType) automatically
-                            // This may raise issues such as unwanted aliasing
-                            // eg. there are pointers as attributes of the class
-    
-    T(const T& t): x(t.x) {}// Copy constructor (still a constructor... initialize T attributes)
-                            // Again, the compiler might take care of this with side effects
-    
-    T& operator=(const T& t)
-    {x=t.x; return *this; } // Assignment operator
-                            // Again, the compiler might take care of this with side effects
+    T(const T& t): x(t.x)   // Copy constructor
+    T& operator=(const T& t)// Assignment operator
     
     ~T();                   // Destructor (automatic cleanup routine)
                             // Put manual memory deallocations here if needed
     
     explicit T(int a);      // Allow T t=T(3) but not T t=3
-    T(float x): T((int)x) {}// Delegate constructor to T(int)
+    T(float x): T((int)x)   // Delegate constructor
 
     int operator int() const
     {return x;}             // Allows int(t)
@@ -390,7 +355,7 @@ public:                     // Accessible to all
     friend void i();        // i() has private access (friendship is given by T, not claimed by i())
     friend class U;         // Members of class U have private access
     static int y;           // Data shared by all T objects
-    static void l();        // Shared code. May access y but not x
+    static void l();        // Shared code. May access y but no non-static members
 };
 ```
 
@@ -405,9 +370,7 @@ void T::f() {               // Code for member function f of class T
 int T::y = 2;               // Initialization of static member (required)
 T::l();                     // Call to static member
 
-T t = 3;                    // Create object t implicit call constructor
-                            // Same as T t = T(3) -> implicit conversion
-                            // To cancel this conversion use explicit before the constructor
+T t = 3;                    // Create object t (implicitly calls the constructor)
 
 t.f();                      // Call method f on object t
 ```
@@ -477,6 +440,7 @@ class Student : public FeupPerson {
 public:
     Student(string name, int id): FeupPerson(name), _id(id) {};
                                   // Cannot instantiate _name here; delegate base constructor
+
     int getId() const override {return _id;};
 private:
     int _id;
@@ -486,8 +450,7 @@ FeupPerson p("Compact");
 Student s("Elegant", 2019);
 
 set<FeupPerson*> mySet; // Polymorfic since FeupPerson might be a Student as well
-                        // FeupPersons are tested for equality via memory location
-                        // Go to `set` for more info
+                        // Pointers/references are used to avoid redudant copies or outdated info
 
 mySet.insert(&p);
 mySet.insert(&s); // Student* implicitly becomes FeupPerson*
@@ -515,22 +478,18 @@ Like overloading, this kind of polymorphism is compile time defined.
 template <class T>  // Same as template <typename T>
 T f(T t);
 
-template <class T>
+template <class T, unsigned long n=0>  // Template with default parameters
 class X {
-  X(T t);
+  X(T t, unsigned long n);
 };
 
-template <class T>
-X<T>::X(T t) {}
-
-template <class T, unsigned long n=0>  // Template with default parameters
-T f(array<int,n> myArray);
 ```
 
 Then use them for your specific needs:
 
 ```cpp
-X<int> x(3);                // Declare an object of type "X of int"
+Person p;
+X<Person> x(p);     // X is a template class; x an instance of it
 ```
  
 ---
@@ -556,7 +515,6 @@ try {
   throw logic_error("received negative value");
                  // you may throw an exception yourself at any time
                  // an exception may be a std::exception, or any other object
-                 // runtime_error is another common std::exception
 }
 catch (exception t) { // you could catch any thrown object instead of std::exception
   cout << t.what() << endl; // print error message (only for std::exception and derived classes)
@@ -592,6 +550,10 @@ s1.find("hello");         // Pointer to first char of found substring, if not fo
  
 ## `stringstream` (most methods are inherited from ios; allows input and output)
 
+As with `ios` streams, reaching the end of a `stringstrean` causes error flags.
+Make sure to clear them to reuse or simply instantiate another stream.
+`ostringstream` and `istringstream` are also available.
+
 ```cpp
 #include <sstream>              // Include sstream (std namespace)
 
@@ -602,26 +564,6 @@ while (ss >> a) temp+=a;        // extract all ss words; all spaces are stripped
 while (getline(ss,a,'\n')) temp+=a;  // read lines; spaces are kept; '\n' is consumed
 ss >> hour >> sep >> minute;    // If "12 : 27" is on ss, int hour becomes 12 and int minute 27
                                 // sep must be a char or rest of the string would be consumed
-```
-
-Reaching the end of ss extraction (>>) causes eof. To reuse:
-
-```cpp
-ss.str("");               // Different from ss.str(); this clears current contents
-ss.clear();               // Clear error flags
-ss << "Now I say hi"      // Reusable again
-```
-
-However for best practice use `istringstream` and `ostringstream` for your needs:
-
-```cpp
-string temp, finalNoSpaces;
-ostringstream oss;
-oss << "      hi    " << "   dude";
-istringstream iss(oss.str());
-
-while(ss >> temp) finalNoSpaces += temp;
-cout << finalNoSpaces;   // print "hidude"
 ```
  
 ---
@@ -648,7 +590,8 @@ cin.ignore(nChars,Delim);   // Ignore nChars characters or until delimiter found
 
 cout << "x=" << 3 << endl;  // Write line to stdout (endl is same as cout << '\n' << flush)
 cerr << x << y << flush;    // Write to stderr and flush
-c = cin.get();              // c = getchar();
+c = cin.get();              // Same as: c = getchar();
+
 cin.get(c);                 // Read char, store in c, consume it
 cin.peek(c);                // Read char, store in c, do not consume it (still asks if buffer is empty)
 cin.getline(s, n, '\n');    // Read line into char s[n] to '\n' (default)
@@ -719,7 +662,7 @@ if (file.is_open()) std::cout << "open file"; // check manually if file exists
 
 if (file.eof()) file.clear(); // if you read until the end, clear the eof flags to reuse
 
-file.close() // mandatory
+file.close();  // mandatory
 ```
 
 You can write or read from the current cursor position a bunch of data:
@@ -747,7 +690,6 @@ file.seekg(offset,flag);   // Put cursor on flag and move offset (reading purpos
 
 // If you were reading struct Person instances you would do
 // file.seekg(recordNumber * sizeof(Person), ios::beg);
-// before reading (check above)
 
 file.seekp(offset,flag);  // Same but for writing purposes
 
@@ -779,11 +721,7 @@ a.resize(15);             // Make vector size 15
                           // eg. do a.at(14) = value; before trying to access that index contents
 
 a.erase(a.begin()+3);     // Remove a[3], shifts elements towards back
-
-a.erase(remove_if(a.begin(), a.end(), isOdd), a.end());
-                          // Erase-remove idiom (faster than erasing one-by-one in a for loop)
-                          // Remove_if points to the element after all non-removed elements
-                          // isOdd is the comp function, should return bool and receive two objects
+                          // When in a for loop, remember to decrease the loop variable afterwards
 
 a.insert(a.begin()+2,12)  // Make a[2] 12; shifts remaining to the right (linear complexity)
 
@@ -936,23 +874,20 @@ Elements are considered duplicates (therefore not added) when !(a < b) && !(b < 
 If order is not important, use `unordered_set` instead.
 
 ```cpp
-#include <set>               // Include set (std namespace)
+#include <set>              // Include set (std namespace)
 
-set<Player> s;               // Empty set of Player's
-                             // For later insertion, you must define the operator < for Player
+set<Player> s;              // Empty set of Player's
+                            // For later insertion, you must define the operator < for Player
                              
 set<int> s(v.begin(), v.end());   // Construct with iterators
 
-set<Player*,decltype(comp)*> players(comp); // You cannot define operator < (neither ==) for two pointers
-                                            // To have your own implementation, pass comp as help function
-
-s.insert(123);            // Add element to set
+s.insert(123);              // Add element to set
 
 if (s.find(123) != s.end()) // find is set specific (use find for other containers)
 
-s.erase(123);  // no need to use iterators here (for vectors you did)
+s.erase(123);               // No need to use iterators here (unlike with the vector method)
 
-cout << s.size();         // Number of elements in set
+cout << s.size();           // Number of elements in set
 ```
  
 ---

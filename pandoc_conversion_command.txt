@@ -1,0 +1,1 @@
+pandoc -s -V geometry:margin=12mm -o cpp_sheet.pdf cpp_sheet.md
